@@ -27,5 +27,7 @@ public class LivroController {
         Usuario usuario = livroService.definirLivroAtual(idUsuario, isbn);
         return ResponseEntity.ok(usuario);
     }
+
+    // TODO Método para inserção de livro atual
 }
 

@@ -4,6 +4,7 @@ import com.redeleitura.dto.UsuarioDTO;
 import com.redeleitura.entity.Acesso;
 import com.redeleitura.entity.Usuario;
 import com.redeleitura.repository.AcessoRepository;
+import com.redeleitura.repository.LivroAtualRepository;
 import com.redeleitura.repository.UsuarioRepository;
 import com.redeleitura.service.UsuarioService;
 import com.redeleitura.util.HashUtil;
@@ -22,6 +23,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private AcessoRepository acessoRepository;
 
+    @Autowired
+    private LivroAtualRepository livroAtualRepository;
+
     @Override
     @Transactional
     public Usuario cadastrarUsuario(UsuarioDTO usuarioDTO) {
@@ -33,8 +37,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         Usuario usuario = new Usuario(
                 usuarioDTO.getNome(),
-                usuarioDTO.getUsuario(),
-                usuarioDTO.getLivroAtualIsbn()
+                usuarioDTO.getUsuario()
         );
 
         Acesso acesso = new Acesso(usuario, "USER", senhaHash);

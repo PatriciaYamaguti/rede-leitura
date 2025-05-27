@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Table(name = "usuarios")
 @Data
 public class Usuario {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -20,8 +19,8 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String usuario;
 
-    @Column(name = "livro_atual_isbn")
-    private String livroAtualIsbn;
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private LivroAtual livroAtual;
 
     @Column(name = "data_cadastro")
     private LocalDateTime dataCadastro = LocalDateTime.now();
@@ -32,10 +31,9 @@ public class Usuario {
 
     public Usuario() {}
 
-    public Usuario(String nome, String usuario, String livroAtualIsbn) {
+    public Usuario(String nome, String usuario) {
         this.nome = nome;
         this.usuario = usuario;
-        this.livroAtualIsbn = livroAtualIsbn;
     }
 
     // Getters And Setters
@@ -64,12 +62,12 @@ public class Usuario {
         this.usuario = usuario;
     }
 
-    public String getLivroAtualIsbn() {
-        return livroAtualIsbn;
+    public LivroAtual getLivroAtual() {
+        return livroAtual;
     }
 
-    public void setLivroAtualIsbn(String livroAtualIsbn) {
-        this.livroAtualIsbn = livroAtualIsbn;
+    public void setLivroAtual(LivroAtual livroAtual) {
+        this.livroAtual = livroAtual;
     }
 
     public LocalDateTime getDataCadastro() {

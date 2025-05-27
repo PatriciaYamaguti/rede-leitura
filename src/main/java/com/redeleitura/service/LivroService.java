@@ -2,6 +2,7 @@ package com.redeleitura.service;
 
 import java.util.Optional;
 
+import com.redeleitura.entity.LivroAtual;
 import org.springframework.stereotype.Service;
 
 import com.redeleitura.entity.LivrosLidos;
@@ -24,49 +25,56 @@ public class LivroService {
 
     public LivrosLidos marcarLivroComoLido(Integer idUsuario, String isbn) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        // Limpar o ISBN recebido da requisição
         String isbnLimpo = isbn.trim();
 
-        // Verificar se o livro já foi lido por esse usuário
+        // Verificar se já foi lido
         Optional<LivrosLidos> livroExistente = livrosLidosRepository.findByUsuarioAndIsbn(usuario, isbnLimpo);
         if (livroExistente.isPresent()) {
-        throw new RuntimeException("Este livro já foi marcado como lido por este usuário.");
+            throw new RuntimeException("Este livro já foi marcado como lido por este usuário.");
         }
 
-        // Buscar dados do livro na API
+        // Buscar na API
         GoogleBooksService.LivroDTO livroDTO = googleBooksService.buscarLivroPorIsbn(isbnLimpo);
 
-        // Criar o objeto livro lido
         LivrosLidos livroLido = new LivrosLidos();
         livroLido.setUsuario(usuario);
-        livroLido.setIsbn(livroDTO.isbn().trim());  // limpar também o retorno da API
+        livroLido.setIsbn(livroDTO.isbn().trim());
         livroLido.setTitulo(livroDTO.titulo());
         livroLido.setAutor(livroDTO.autor());
 
-        // Salvar no banco
         LivrosLidos salvo = livrosLidosRepository.save(livroLido);
 
-        // Se o livro lido for o mesmo do livro atual, limpar o campo
-        if (isbnLimpo.equals(usuario.getLivroAtualIsbn())) {
-            usuario.setLivroAtualIsbn(null);
+        // Limpar livroAtual se coincidir
+        if (usuario.getLivroAtual() != null && isbnLimpo.equals(usuario.getLivroAtual().getIsbn())) {
+            usuario.setLivroAtual(null);
             usuarioRepository.save(usuario);
-    }
+        }
 
         return salvo;
     }
 
-
     public Usuario definirLivroAtual(Integer idUsuario, String isbn) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-    // Remover espaços e quebras de linha no ISBN
         String isbnLimpo = isbn.trim();
-        usuario.setLivroAtualIsbn(isbnLimpo);
 
-        return usuarioRepository.save(usuario);
+        // Buscar dados do livro
+        GoogleBooksService.LivroDTO livroDTO = googleBooksService.buscarLivroPorIsbn(isbnLimpo);
+
+        // Criar entidade LivroAtual
+        LivroAtual livroAtual = new LivroAtual();
+        livroAtual.setIsbn(livroDTO.isbn().trim());
+        livroAtual.setTitulo(livroDTO.titulo());
+        livroAtual.setAutor(livroDTO.autor());
+        livroAtual.setUsuario(usuario);
+
+        // Atualizar o livro atual do usuário
+        usuario.setLivroAtual(livroAtual);
+
+        return usuarioRepository.save(usuario); // Cascade.ALL deve persistir o LivroAtual automaticamente
     }
 
 }

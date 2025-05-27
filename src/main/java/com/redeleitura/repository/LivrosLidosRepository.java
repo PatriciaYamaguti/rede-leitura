@@ -10,4 +10,3 @@ public interface LivrosLidosRepository extends JpaRepository<LivrosLidos, Long> 
     List<LivrosLidos> findByUsuario(Usuario usuario);
     Optional<LivrosLidos> findByUsuarioAndIsbn(Usuario usuario, String isbn);
 }
-
