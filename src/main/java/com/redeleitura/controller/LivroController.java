@@ -1,5 +1,6 @@
 package com.redeleitura.controller;
 
+import com.redeleitura.entity.LivroAtual;
 import com.redeleitura.entity.LivrosLidos;
 import com.redeleitura.entity.Usuario;
 import com.redeleitura.service.LivroService;
@@ -23,9 +24,9 @@ public class LivroController {
     }
 
     @PostMapping("/{idUsuario}/atual/{isbn}")
-    public ResponseEntity<Usuario> definirLivroAtual(@PathVariable Integer idUsuario, @PathVariable String isbn) {
-        Usuario usuario = livroService.definirLivroAtual(idUsuario, isbn);
-        return ResponseEntity.ok(usuario);
+    public ResponseEntity<LivroAtual> definirLivroAtual(@PathVariable Integer idUsuario, @PathVariable String isbn) {
+        LivroAtual livroAtual = livroService.definirLivroAtual(idUsuario, isbn);
+        return ResponseEntity.ok(livroAtual);
     }
 
     // TODO Método para inserção de livro atual

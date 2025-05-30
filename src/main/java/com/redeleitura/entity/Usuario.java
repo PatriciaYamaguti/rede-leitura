@@ -1,6 +1,7 @@
 package com.redeleitura.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class Usuario {
     private String usuario;
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private LivroAtual livroAtual;
 
     @Column(name = "data_cadastro")

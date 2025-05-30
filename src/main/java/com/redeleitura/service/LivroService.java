@@ -1,42 +1,48 @@
 package com.redeleitura.service;
 
-import java.util.Optional;
-
 import com.redeleitura.entity.LivroAtual;
-import org.springframework.stereotype.Service;
-
 import com.redeleitura.entity.LivrosLidos;
 import com.redeleitura.entity.Usuario;
 import com.redeleitura.repository.LivrosLidosRepository;
 import com.redeleitura.repository.UsuarioRepository;
+import com.redeleitura.util.GoogleBooksUtil;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 @Service
 public class LivroService {
 
-    private final GoogleBooksService googleBooksService;
+    private final GoogleBooksUtil googleBooksUtil;
     private final UsuarioRepository usuarioRepository;
     private final LivrosLidosRepository livrosLidosRepository;
 
-    public LivroService(GoogleBooksService googleBooksService, UsuarioRepository usuarioRepository, LivrosLidosRepository livrosLidosRepository) {
-        this.googleBooksService = googleBooksService;
+    public LivroService(GoogleBooksUtil googleBooksUtil, UsuarioRepository usuarioRepository, LivrosLidosRepository livrosLidosRepository) {
+        this.googleBooksUtil = googleBooksUtil;
         this.usuarioRepository = usuarioRepository;
         this.livrosLidosRepository = livrosLidosRepository;
     }
 
     public LivrosLidos marcarLivroComoLido(Integer idUsuario, String isbn) {
-        Usuario usuario = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
+        Usuario usuario = verificarUsuarioBanco(idUsuario);
         String isbnLimpo = isbn.trim();
 
-        // Verificar se já foi lido
-        Optional<LivrosLidos> livroExistente = livrosLidosRepository.findByUsuarioAndIsbn(usuario, isbnLimpo);
-        if (livroExistente.isPresent()) {
-            throw new RuntimeException("Este livro já foi marcado como lido por este usuário.");
+        Optional<LivrosLidos> livroLidoExistente = livrosLidosRepository.findByUsuarioAndIsbn(usuario, isbnLimpo);
+
+        if (livroLidoExistente.isPresent()) {
+            // Se o livro já está marcado como lido e é o livro atual, limpa o livro atual
+            if (usuario.getLivroAtual() != null && isbnLimpo.equals(usuario.getLivroAtual().getIsbn())) {
+                usuario.setLivroAtual(null);
+                usuarioRepository.save(usuario);
+            }
+            // Retorna o livro lido existente (sem inserir nada novo)
+            return livroLidoExistente.get();
         }
 
-        // Buscar na API
-        GoogleBooksService.LivroDTO livroDTO = googleBooksService.buscarLivroPorIsbn(isbnLimpo);
+        // Caso não tenha sido marcado ainda, marca o livro como lido normalmente
+        GoogleBooksUtil.LivroDTO livroDTO = buscarLivroPorIsbn(isbnLimpo);
 
         LivrosLidos livroLido = new LivrosLidos();
         livroLido.setUsuario(usuario);
@@ -46,7 +52,7 @@ public class LivroService {
 
         LivrosLidos salvo = livrosLidosRepository.save(livroLido);
 
-        // Limpar livroAtual se coincidir
+        // Se o livro era o livro atual, limpa o livro atual do usuário
         if (usuario.getLivroAtual() != null && isbnLimpo.equals(usuario.getLivroAtual().getIsbn())) {
             usuario.setLivroAtual(null);
             usuarioRepository.save(usuario);
@@ -55,27 +61,35 @@ public class LivroService {
         return salvo;
     }
 
-    public Usuario definirLivroAtual(Integer idUsuario, String isbn) {
-        Usuario usuario = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
+    public LivroAtual definirLivroAtual(Integer idUsuario, String isbn) {
+        Usuario usuario = verificarUsuarioBanco(idUsuario);
         String isbnLimpo = isbn.trim();
 
-        // Buscar dados do livro
-        GoogleBooksService.LivroDTO livroDTO = googleBooksService.buscarLivroPorIsbn(isbnLimpo);
+        GoogleBooksUtil.LivroDTO livroDTO = buscarLivroPorIsbn(isbnLimpo);
 
-        // Criar entidade LivroAtual
-        LivroAtual livroAtual = new LivroAtual();
-        livroAtual.setIsbn(livroDTO.isbn().trim());
-        livroAtual.setTitulo(livroDTO.titulo());
-        livroAtual.setAutor(livroDTO.autor());
-        livroAtual.setUsuario(usuario);
+        if (usuario.getLivroAtual() != null) {
+            usuario.setLivroAtual(null);
+        }
 
-        // Atualizar o livro atual do usuário
-        usuario.setLivroAtual(livroAtual);
+        LivroAtual novoLivroAtual = new LivroAtual();
+        novoLivroAtual.setIsbn(livroDTO.isbn().trim());
+        novoLivroAtual.setTitulo(livroDTO.titulo());
+        novoLivroAtual.setAutor(livroDTO.autor());
+        novoLivroAtual.setUsuario(usuario);
 
-        return usuarioRepository.save(usuario); // Cascade.ALL deve persistir o LivroAtual automaticamente
+        usuario.setLivroAtual(novoLivroAtual);
+
+        usuarioRepository.save(usuario);
+
+        return novoLivroAtual;
     }
 
-}
+    private Usuario verificarUsuarioBanco(Integer idUsuario) {
+        return usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário não encontrado"));
+    }
 
+    private GoogleBooksUtil.LivroDTO buscarLivroPorIsbn(String isbn) {
+        return googleBooksUtil.buscarLivroPorIsbn(isbn.trim());
+    }
+}

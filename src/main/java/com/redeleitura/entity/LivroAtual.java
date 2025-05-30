@@ -1,5 +1,7 @@
 package com.redeleitura.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -10,10 +12,12 @@ public class LivroAtual {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @OneToOne
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
+    @JsonIgnore
     private Usuario usuario;
 
     @Column(nullable = false)

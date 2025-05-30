@@ -1,13 +1,15 @@
-package com.redeleitura.service;
+package com.redeleitura.util;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class GoogleBooksService {
+public class GoogleBooksUtil {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -31,7 +33,7 @@ public class GoogleBooksService {
             }
         }
 
-        throw new RuntimeException("Livro não encontrado na API Google Books");
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Livro não encontrado na API Google Books");
     }
 
     public record LivroDTO(String isbn, String titulo, String autor) {}
