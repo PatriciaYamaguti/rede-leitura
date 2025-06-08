@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class AcessoDTO {
     private String tipoAcesso;
-    @JsonIgnore
     private String senha;
 
     public AcessoDTO() {}

@@ -1,6 +1,7 @@
 package com.redeleitura.controller;
 
 import com.redeleitura.dto.LivrosLidosDTO;
+import com.redeleitura.dto.UsuarioComInteresseDTO;
 import com.redeleitura.dto.UsuarioDTO;
 import com.redeleitura.entity.LivrosLidos;
 import com.redeleitura.entity.Usuario;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -28,5 +30,8 @@ public class UsuarioController {
         }
     }
 
-    
+    @GetMapping("/interesses/{idUsuario}")
+    public ResponseEntity<List<UsuarioComInteresseDTO>> listarPorInteresse(@PathVariable Integer idUsuario) {
+        return ResponseEntity.ok(usuarioService.listarUsuariosPorInteresses(idUsuario));
+    }
 }
