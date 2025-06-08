@@ -14,7 +14,7 @@ public class UsuarioMapper {
     public UsuarioDTO toUsuarioDTO(Usuario usuario) {
         if (usuario == null) return null;
 
-        UsuarioDTO dto = new UsuarioDTO();
+        UsuarioDTO dto = new UsuarioDTO(usuario);
         dto.setNome(usuario.getNome());
         dto.setUsuario(usuario.getUsuario());
         dto.setAcesso(toAcessoDTO(usuario.getAcesso()));

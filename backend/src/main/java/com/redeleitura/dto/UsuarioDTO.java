@@ -1,6 +1,6 @@
 package com.redeleitura.dto;
 
-import com.redeleitura.entity.LivroAtual;
+import com.redeleitura.entity.Usuario;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +11,8 @@ public class UsuarioDTO {
     private AcessoDTO acesso;
     private LivroAtualDTO livroAtual;
     private LocalDateTime dataCadastro;
+
+    public UsuarioDTO(Usuario usuario) {}
 
     public UsuarioDTO() {}
 
