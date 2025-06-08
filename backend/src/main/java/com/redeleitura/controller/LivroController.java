@@ -2,6 +2,9 @@ package com.redeleitura.controller;
 
 import java.util.List;
 
+import com.redeleitura.dto.LivroAtualDTO;
+import com.redeleitura.dto.LivrosLidosDTO;
+import com.redeleitura.mapper.LivroMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,25 +24,29 @@ public class LivroController {
 
     private final LivroService livroService;
     private final GoogleBooksUtil googleBooksUtil;
+    private final LivroMapper livroMapper;
 
-    public LivroController(LivroService livroService, GoogleBooksUtil googleBooksUtil) {
+    public LivroController(LivroService livroService, GoogleBooksUtil googleBooksUtil, LivroMapper livroMapper) {
         this.livroService = livroService;
         this.googleBooksUtil = googleBooksUtil;
+        this.livroMapper = livroMapper;
     }
 
     @PostMapping("/{idUsuario}/lido/{isbn}")
-    public ResponseEntity<LivrosLidos> marcarComoLido(@PathVariable Integer idUsuario, @PathVariable String isbn) {
+    public ResponseEntity<LivrosLidosDTO> marcarComoLido(@PathVariable Integer idUsuario, @PathVariable String isbn) {
         LivrosLidos livroLido = livroService.marcarLivroComoLido(idUsuario, isbn);
-        return ResponseEntity.ok(livroLido);
+        LivrosLidosDTO dto = livroMapper.toLivrosLidosDTO(livroLido);
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/{idUsuario}/atual/{isbn}")
-    public ResponseEntity<LivroAtual> definirLivroAtual(@PathVariable Integer idUsuario, @PathVariable String isbn) {
+    public ResponseEntity<LivroAtualDTO> definirLivroAtual(@PathVariable Integer idUsuario, @PathVariable String isbn) {
         LivroAtual livroAtual = livroService.definirLivroAtual(idUsuario, isbn);
-        return ResponseEntity.ok(livroAtual);
+        LivroAtualDTO dto = livroMapper.toLivroAtualDTO(livroAtual);
+        return ResponseEntity.ok(dto);
     }
 
-     @GetMapping("/buscar")
+    @GetMapping("/buscar")
     public ResponseEntity<List<GoogleBooksUtil.LivroDTO>> buscarLivrosPorTitulo(@RequestParam String titulo) { 
         List<GoogleBooksUtil.LivroDTO> resultados = googleBooksUtil.buscarLivrosPorTitulo(titulo);
         return ResponseEntity.ok(resultados); 

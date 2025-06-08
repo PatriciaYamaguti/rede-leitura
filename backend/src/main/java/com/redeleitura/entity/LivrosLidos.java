@@ -12,7 +12,6 @@ public class LivrosLidos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
 
     @ManyToOne

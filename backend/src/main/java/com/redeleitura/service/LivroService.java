@@ -3,6 +3,7 @@ package com.redeleitura.service;
 import com.redeleitura.entity.LivroAtual;
 import com.redeleitura.entity.LivrosLidos;
 import com.redeleitura.entity.Usuario;
+import com.redeleitura.repository.LivroAtualRepository;
 import com.redeleitura.repository.LivrosLidosRepository;
 import com.redeleitura.repository.UsuarioRepository;
 import com.redeleitura.util.GoogleBooksUtil;
@@ -18,11 +19,13 @@ public class LivroService {
     private final GoogleBooksUtil googleBooksUtil;
     private final UsuarioRepository usuarioRepository;
     private final LivrosLidosRepository livrosLidosRepository;
+    private final LivroAtualRepository livroAtualRepository;
 
-    public LivroService(GoogleBooksUtil googleBooksUtil, UsuarioRepository usuarioRepository, LivrosLidosRepository livrosLidosRepository) {
+    public LivroService(GoogleBooksUtil googleBooksUtil, UsuarioRepository usuarioRepository, LivrosLidosRepository livrosLidosRepository, LivroAtualRepository livroAtualRepository) {
         this.googleBooksUtil = googleBooksUtil;
         this.usuarioRepository = usuarioRepository;
         this.livrosLidosRepository = livrosLidosRepository;
+        this.livroAtualRepository = livroAtualRepository;
     }
 
     public LivrosLidos marcarLivroComoLido(Integer idUsuario, String isbn) {
@@ -62,26 +65,37 @@ public class LivroService {
     }
 
     public LivroAtual definirLivroAtual(Integer idUsuario, String isbn) {
+        // Verifica se o usuário existe no banco, lança exceção se não existir
         Usuario usuario = verificarUsuarioBanco(idUsuario);
-        String isbnLimpo = isbn.trim();
-
-        GoogleBooksUtil.LivroDTO livroDTO = buscarLivroPorIsbn(isbnLimpo);
-
-        if (usuario.getLivroAtual() != null) {
-            usuario.setLivroAtual(null);
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuário com ID " + idUsuario + " não encontrado.");
         }
 
-        LivroAtual novoLivroAtual = new LivroAtual();
-        novoLivroAtual.setIsbn(livroDTO.isbn().trim());
-        novoLivroAtual.setTitulo(livroDTO.titulo());
-        novoLivroAtual.setAutor(livroDTO.autor());
-        novoLivroAtual.setUsuario(usuario);
+        // Remove espaços extras do ISBN
+        String isbnLimpo = isbn.trim();
 
-        usuario.setLivroAtual(novoLivroAtual);
+        // Busca o livro pelo ISBN
+        GoogleBooksUtil.LivroDTO livroDTO = buscarLivroPorIsbn(isbnLimpo);
+        if (livroDTO == null) {
+            throw new IllegalArgumentException("Livro com ISBN " + isbnLimpo + " não encontrado.");
+        }
 
-        usuarioRepository.save(usuario);
+        // Busca LivroAtual do usuário no banco
+        LivroAtual livroAtual = livroAtualRepository.findByUsuarioId(idUsuario);
 
-        return novoLivroAtual;
+        if (livroAtual != null) {
+            // Atualiza os dados do livro atual existente
+            livroAtual.setAutor(livroDTO.autor());
+            livroAtual.setIsbn(livroDTO.isbn().trim());
+            livroAtual.setTitulo(livroDTO.titulo());
+            livroAtualRepository.save(livroAtual);
+            return livroAtual;
+        } else {
+            // Cria um novo LivroAtual
+            LivroAtual novoLivro = criarLivroAtual(livroDTO, usuario);
+            livroAtualRepository.save(novoLivro);
+            return novoLivro;
+        }
     }
 
     private Usuario verificarUsuarioBanco(Integer idUsuario) {
@@ -91,5 +105,14 @@ public class LivroService {
 
     private GoogleBooksUtil.LivroDTO buscarLivroPorIsbn(String isbn) {
         return googleBooksUtil.buscarLivroPorIsbn(isbn.trim());
+    }
+
+    private LivroAtual criarLivroAtual(GoogleBooksUtil.LivroDTO livroDTO, Usuario usuario) {
+        LivroAtual livroAtual = new LivroAtual();
+        livroAtual.setIsbn(livroDTO.isbn().trim());
+        livroAtual.setTitulo(livroDTO.titulo());
+        livroAtual.setAutor(livroDTO.autor());
+        livroAtual.setUsuario(usuario);
+        return livroAtual;
     }
 }

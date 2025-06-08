@@ -9,7 +9,7 @@ public class UsuarioDTO {
     private String nome;
     private String usuario;
     private AcessoDTO acesso;
-    private LivroAtual livroAtual;
+    private LivroAtualDTO livroAtual;
     private LocalDateTime dataCadastro;
 
     public UsuarioDTO() {}
@@ -29,7 +29,7 @@ public class UsuarioDTO {
         this.nome = nome;
     }
 
-    public LivroAtual getLivroAtual() {return livroAtual;}
+    public LivroAtualDTO getLivroAtual() {return livroAtual;}
 
     public String getUsuario() {
         return usuario;
@@ -47,7 +47,7 @@ public class UsuarioDTO {
         this.acesso = acesso;
     }
 
-    public void setLivroAtual(LivroAtual livroAtual) {
+    public void setLivroAtual(LivroAtualDTO livroAtual) {
         this.livroAtual = livroAtual;
     }
 
