@@ -12,12 +12,10 @@ public class LivroAtual {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
 
     @OneToOne
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
-    @JsonIgnore
     private Usuario usuario;
 
     @Column(nullable = false)
