@@ -15,33 +15,33 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.redeleitura.entity.LivroAtual;
 import com.redeleitura.entity.LivrosLidos;
-import com.redeleitura.service.LivroService;
+import com.redeleitura.service.impl.LivroServiceImpl;
 import com.redeleitura.util.GoogleBooksUtil;
 
 @RestController
 @RequestMapping("/api/livros")
 public class LivroController {
 
-    private final LivroService livroService;
+    private final LivroServiceImpl livroServiceImpl;
     private final GoogleBooksUtil googleBooksUtil;
     private final LivroMapper livroMapper;
 
-    public LivroController(LivroService livroService, GoogleBooksUtil googleBooksUtil, LivroMapper livroMapper) {
-        this.livroService = livroService;
+    public LivroController(LivroServiceImpl livroServiceImpl, GoogleBooksUtil googleBooksUtil, LivroMapper livroMapper) {
+        this.livroServiceImpl = livroServiceImpl;
         this.googleBooksUtil = googleBooksUtil;
         this.livroMapper = livroMapper;
     }
 
     @PostMapping("/{idUsuario}/lido/{isbn}")
     public ResponseEntity<LivrosLidosDTO> marcarComoLido(@PathVariable Integer idUsuario, @PathVariable String isbn) {
-        LivrosLidos livroLido = livroService.marcarLivroComoLido(idUsuario, isbn);
+        LivrosLidos livroLido = livroServiceImpl.marcarLivroComoLido(idUsuario, isbn);
         LivrosLidosDTO dto = livroMapper.toLivrosLidosDTO(livroLido);
         return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/{idUsuario}/atual/{isbn}")
     public ResponseEntity<LivroAtualDTO> definirLivroAtual(@PathVariable Integer idUsuario, @PathVariable String isbn) {
-        LivroAtual livroAtual = livroService.definirLivroAtual(idUsuario, isbn);
+        LivroAtual livroAtual = livroServiceImpl.definirLivroAtual(idUsuario, isbn);
         LivroAtualDTO dto = livroMapper.toLivroAtualDTO(livroAtual);
         return ResponseEntity.ok(dto);
     }
