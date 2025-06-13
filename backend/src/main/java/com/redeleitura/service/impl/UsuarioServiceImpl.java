@@ -1,6 +1,6 @@
 package com.redeleitura.service.impl;
 
-import com.redeleitura.dto.UsuarioComInteresseDTO;
+import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import com.redeleitura.dto.UsuarioDTO;
 import com.redeleitura.entity.Acesso;
 import com.redeleitura.entity.LivrosLidos;
@@ -38,28 +38,25 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public Usuario cadastrarUsuario(UsuarioDTO usuarioDTO) {
+    public UsuarioDTO cadastrarUsuario(UsuarioDTO usuarioDTO) {
         if (usuarioRepository.findByUsuario(usuarioDTO.getUsuario()).isPresent()) {
             throw new IllegalArgumentException("Usuário já cadastrado");
         }
 
         String senhaHash = HashUtil.gerarHashSHA256(usuarioDTO.getAcesso().getSenha());
 
-        Usuario usuario = new Usuario(
-                usuarioDTO.getNome(),
-                usuarioDTO.getUsuario()
-        );
+        Usuario usuario = usuarioMapper.toUsuarioEntity(usuarioDTO);
 
         Acesso acesso = new Acesso(usuario, "USER", senhaHash);
         usuario.setAcesso(acesso);
 
-        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+        UsuarioDTO usuarioSalvo = usuarioMapper.toUsuarioDTO(usuarioRepository.save(usuario));
         acessoRepository.save(acesso);
         return usuarioSalvo;
     }
 
     @Override
-    public List<UsuarioComInteresseDTO> listarUsuariosPorInteresses(Integer idUsuario) {
+    public List<UsuarioLivrosEmComumDTO> listarUsuariosPorInteresses(Integer idUsuario) {
         Usuario usuarioAtual = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
@@ -86,15 +83,16 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioComumLivrosMap.entrySet().stream()
                 .sorted(Map.Entry.<Usuario, Long>comparingByValue(Comparator.reverseOrder()))
                 .map(entry -> {
-                    UsuarioDTO dto = usuarioMapper.toUsuarioDTO(entry.getKey());
-                    return new UsuarioComInteresseDTO(dto, entry.getValue());
+                    Usuario u = entry.getKey();
+                    long quantidadeEmComum = entry.getValue();
+                    return new UsuarioLivrosEmComumDTO(
+                            quantidadeEmComum,
+                            u.getNome(),
+                            u.getDescricao(),
+                            u.getUsuario()
+                    );
                 })
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Usuario> listarUsuarios() {
-        return List.of();
     }
 
     @Override

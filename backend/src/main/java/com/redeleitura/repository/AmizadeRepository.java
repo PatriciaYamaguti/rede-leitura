@@ -1,12 +1,29 @@
 package com.redeleitura.repository;
 
 import com.redeleitura.entity.Amizade;
-import com.redeleitura.entity.AmizadeId;
 import com.redeleitura.entity.Usuario;
+import com.redeleitura.enums.StatusAmizade;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-public interface AmizadeRepository extends JpaRepository<Amizade, AmizadeId> {
-    List<Amizade> findByUsuario(Usuario usuario);
+import java.util.List;
+import java.util.Optional;
+
+public interface AmizadeRepository extends JpaRepository<Amizade, Long> {
+
+    @Query("SELECT s FROM Amizade s WHERE " +
+            "((s.solicitante = :u1 AND s.solicitado = :u2) OR (s.solicitante = :u2 AND s.solicitado = :u1)) " +
+            "AND s.status IN (:status)")
+    Optional<Amizade> findRelacionamentoEntreUsuarios(
+            @Param("u1") Usuario u1,
+            @Param("u2") Usuario u2,
+            @Param("status") List<StatusAmizade> status);
+
+    List<Amizade> findBySolicitadoAndStatus(Usuario solicitado, StatusAmizade status);
+
+    List<Amizade> findBySolicitanteAndStatus(Usuario solicitante, StatusAmizade status);
+
+    List<Amizade> findByStatusAndSolicitanteOrSolicitado(StatusAmizade status, Usuario u1, Usuario u2);
 }
 

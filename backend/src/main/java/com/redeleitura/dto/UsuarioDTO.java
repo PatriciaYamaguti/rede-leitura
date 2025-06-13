@@ -8,6 +8,7 @@ public class UsuarioDTO {
 
     private String nome;
     private String usuario;
+    private String descricao;
     private AcessoDTO acesso;
     private LivroAtualDTO livroAtual;
     private LocalDateTime dataCadastro;
@@ -16,11 +17,12 @@ public class UsuarioDTO {
 
     public UsuarioDTO() {}
 
-    public UsuarioDTO(String nome, String usuario, AcessoDTO acesso, LocalDateTime dataCadastro) {
+    public UsuarioDTO(String nome, String usuario, String descricao, AcessoDTO acesso, LocalDateTime dataCadastro) {
         this.nome = nome;
         this.usuario = usuario;
         this.acesso = acesso;
         this.dataCadastro = dataCadastro;
+        this.descricao = descricao;
     }
 
     public String getNome() {
@@ -59,5 +61,13 @@ public class UsuarioDTO {
 
     public void setDataCadastro(LocalDateTime dataCadastro) {
         this.dataCadastro = dataCadastro;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 }

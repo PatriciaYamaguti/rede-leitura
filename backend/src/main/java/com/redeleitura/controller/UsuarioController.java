@@ -1,18 +1,14 @@
 package com.redeleitura.controller;
 
-import com.redeleitura.dto.LivrosLidosDTO;
-import com.redeleitura.dto.UsuarioComInteresseDTO;
+import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import com.redeleitura.dto.UsuarioDTO;
-import com.redeleitura.entity.LivrosLidos;
 import com.redeleitura.entity.Usuario;
-import com.redeleitura.service.UsuarioService;
 import com.redeleitura.service.impl.UsuarioServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -23,7 +19,7 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody UsuarioDTO usuarioDTO) {
         try {
-            Usuario usuario = usuarioService.cadastrarUsuario(usuarioDTO);
+            UsuarioDTO usuario = usuarioService.cadastrarUsuario(usuarioDTO);
             return ResponseEntity.ok(usuario);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -31,7 +27,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/interesses/{idUsuario}")
-    public ResponseEntity<List<UsuarioComInteresseDTO>> listarPorInteresse(@PathVariable Integer idUsuario) {
+    public ResponseEntity<List<UsuarioLivrosEmComumDTO>> listarPorInteresse(@PathVariable Integer idUsuario) {
         return ResponseEntity.ok(usuarioService.listarUsuariosPorInteresses(idUsuario));
     }
 }

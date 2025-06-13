@@ -1,26 +1,33 @@
 package com.redeleitura.entity;
 
+import com.redeleitura.enums.StatusAmizade;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "amizades")
+@Table(name = "solicitacoes_amizade", uniqueConstraints = @UniqueConstraint(columnNames = {"solicitante_id", "solicitado_id"}))
 @Data
-@IdClass(AmizadeId.class)
 public class Amizade {
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    @Id
     @ManyToOne
-    @JoinColumn(name = "amigo_id")
-    private Usuario amigo;
+    @JoinColumn(name = "solicitante_id", nullable = false)
+    private Usuario solicitante;
 
-    @Column(name = "data_amizade")
-    private LocalDateTime dataAmizade = LocalDateTime.now();
+    @ManyToOne
+    @JoinColumn(name = "solicitado_id", nullable = false)
+    private Usuario solicitado;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusAmizade status = StatusAmizade.PENDENTE;
+
+    @Column(name = "data_solicitacao")
+    private LocalDateTime dataSolicitacao = LocalDateTime.now();
+
 }
 

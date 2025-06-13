@@ -20,6 +20,9 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String usuario;
 
+    @Column(nullable = false)
+    private String descricao;
+
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private LivroAtual livroAtual;
@@ -28,14 +31,14 @@ public class Usuario {
     private LocalDateTime dataCadastro = LocalDateTime.now();
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
-    @JsonIgnore
     private Acesso acesso;
 
     public Usuario() {}
 
-    public Usuario(String nome, String usuario) {
+    public Usuario(String nome, String usuario, String descricao) {
         this.nome = nome;
         this.usuario = usuario;
+        this.descricao = descricao;
     }
 
     // Getters And Setters
@@ -87,5 +90,9 @@ public class Usuario {
     public void setAcesso(Acesso acesso) {
         this.acesso = acesso;
     }
+
+    public String getDescricao() { return descricao; }
+
+    public void setDescricao(String descricao) { this.descricao = descricao; }
 }
 

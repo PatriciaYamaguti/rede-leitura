@@ -17,6 +17,7 @@ public class UsuarioMapper {
         UsuarioDTO dto = new UsuarioDTO(usuario);
         dto.setNome(usuario.getNome());
         dto.setUsuario(usuario.getUsuario());
+        dto.setDescricao(usuario.getDescricao());
         dto.setAcesso(toAcessoDTO(usuario.getAcesso()));
         dto.setDataCadastro(usuario.getDataCadastro());
 
@@ -37,6 +38,7 @@ public class UsuarioMapper {
         Usuario usuario = new Usuario();
         usuario.setNome(dto.getNome());
         usuario.setUsuario(dto.getUsuario());
+        usuario.setDescricao(dto.getDescricao());
         usuario.setAcesso(toAcessoEntity(dto.getAcesso()));
         usuario.setDataCadastro(dto.getDataCadastro());
 
@@ -45,7 +47,7 @@ public class UsuarioMapper {
             livroAtual.setIsbn(dto.getLivroAtual().getIsbn());
             livroAtual.setTitulo(dto.getLivroAtual().getTitulo());
             livroAtual.setAutor(dto.getLivroAtual().getAutor());
-            livroAtual.setUsuario(usuario); // Importante: definir o dono do livro atual
+            livroAtual.setUsuario(usuario);
             usuario.setLivroAtual(livroAtual);
         }
 
