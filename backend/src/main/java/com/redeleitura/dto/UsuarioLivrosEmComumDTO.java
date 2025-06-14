@@ -4,7 +4,8 @@ public class UsuarioLivrosEmComumDTO {
     private long quantidadeLivrosEmComum;
     private String nome;
     private String descricao;
-    private String usuario; // suponho que aqui você quis dizer login ou nome de usuário
+    private String usuario;
+
 
     public UsuarioLivrosEmComumDTO(long quantidadeLivrosEmComum, String nome, String descricao, String usuario) {
         this.quantidadeLivrosEmComum = quantidadeLivrosEmComum;
@@ -12,8 +13,6 @@ public class UsuarioLivrosEmComumDTO {
         this.descricao = descricao;
         this.usuario = usuario;
     }
-
-    public UsuarioLivrosEmComumDTO() {}
 
     public long getQuantidadeLivrosEmComum() {
         return quantidadeLivrosEmComum;

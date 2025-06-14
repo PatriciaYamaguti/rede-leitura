@@ -1,15 +1,14 @@
 package com.redeleitura.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import com.redeleitura.dto.AmigoDTO;
+import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
+import com.redeleitura.entity.LivrosLidos;
+import com.redeleitura.repository.LivrosLidosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.redeleitura.dto.UsuarioDTO;
 import com.redeleitura.entity.Amizade;
 import com.redeleitura.entity.Usuario;
 import com.redeleitura.enums.StatusAmizade;
@@ -25,6 +24,8 @@ public class AmizadeServiceImpl implements AmizadeService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+    @Autowired
+    private LivrosLidosRepository livrosLidosRepository;
 
     @Override
     public String enviarSolicitacao(Integer idSolicitante, Integer idSolicitado) {
@@ -90,25 +91,52 @@ public class AmizadeServiceImpl implements AmizadeService {
     }
 
     @Override
-    public List<AmigoDTO> listarAmigos(Integer idUsuario) {
+    public List<UsuarioLivrosEmComumDTO> listarAmigos(Integer idUsuario) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         List<Amizade> amizades = amizadeRepository.findByStatusAndUsuario(StatusAmizade.ACEITA, usuario);
 
-        List<AmigoDTO> amigos = new ArrayList<>();
-        for (Amizade am : amizades) {
-            Usuario amigo;
+        // Lista de amigos (apenas os objetos Usuario)
+        List<Usuario> amigos = amizades.stream()
+                .map(am -> am.getSolicitante().equals(usuario) ? am.getSolicitado() : am.getSolicitante())
+                .toList();
 
-            if(am.getSolicitante().equals(usuario)) {
-                amigo = am.getSolicitado();
-            } else {
-                amigo = am.getSolicitante();
-            }
-            amigos.add(new AmigoDTO(amigo.getId(), amigo.getNome()));
-        }
+        // Buscar os livros que o usuário atual leu
+        List<LivrosLidos> livrosUsuarioAtual = livrosLidosRepository.findByUsuario(usuario);
+        Set<String> livrosLidosIsbns = livrosUsuarioAtual.stream()
+                .map(LivrosLidos::getIsbn)
+                .collect(Collectors.toSet());
 
-        return amigos;
+        // Buscar os livros em comum apenas entre o usuário e os amigos
+        Map<Usuario, Long> usuarioComumLivrosMap = buscarUsuariosELivrosEmComum(livrosLidosIsbns, amigos);
+
+        // Montar a lista de DTOs
+        return usuarioComumLivrosMap.entrySet().stream()
+                .map(entry -> new UsuarioLivrosEmComumDTO(
+                        entry.getValue(),
+                        entry.getKey().getNome(),
+                        entry.getKey().getDescricao(),
+                        entry.getKey().getUsuario()
+                ))
+                .toList();
     }
 
+    private Map<Usuario, Long> buscarUsuariosELivrosEmComum(Set<String> livrosLidosIsbns, List<Usuario> amigos) {
+        Map<Usuario, Long> resultado = new HashMap<>();
+
+        for (Usuario amigo : amigos) {
+            List<LivrosLidos> livrosDoAmigo = livrosLidosRepository.findByUsuario(amigo);
+
+            long quantidadeEmComum = livrosDoAmigo.stream()
+                    .filter(livro -> livrosLidosIsbns.contains(livro.getIsbn()))
+                    .count();
+
+            if (quantidadeEmComum > 0) {
+                resultado.put(amigo, quantidadeEmComum);
+            }
+        }
+
+        return resultado;
+    }
 }

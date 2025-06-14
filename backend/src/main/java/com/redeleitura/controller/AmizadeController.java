@@ -1,6 +1,6 @@
 package com.redeleitura.controller;
 
-import com.redeleitura.dto.AmigoDTO;
+import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +36,7 @@ public class AmizadeController {
     }
 
     @PostMapping("/listar")
-    public List<AmigoDTO> listarAmizades(@RequestParam Integer idUsuario) {
+    public List<UsuarioLivrosEmComumDTO> listarAmizades(@RequestParam Integer idUsuario) {
         return amizadeService.listarAmigos(idUsuario);
     }
 }
