@@ -1,5 +1,11 @@
 package com.redeleitura.service.impl;
 
+import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.redeleitura.entity.LivroAtual;
 import com.redeleitura.entity.LivrosLidos;
 import com.redeleitura.entity.Usuario;
@@ -8,11 +14,6 @@ import com.redeleitura.repository.LivrosLidosRepository;
 import com.redeleitura.repository.UsuarioRepository;
 import com.redeleitura.service.LivroService;
 import com.redeleitura.util.GoogleBooksUtil;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
 
 @Service
 public class LivroServiceImpl implements LivroService {
@@ -29,6 +30,7 @@ public class LivroServiceImpl implements LivroService {
         this.livroAtualRepository = livroAtualRepository;
     }
 
+    @Override
     public LivrosLidos marcarLivroComoLido(Integer idUsuario, String isbn) {
         Usuario usuario = verificarUsuarioBanco(idUsuario);
         String isbnLimpo = isbn.trim();
@@ -65,6 +67,7 @@ public class LivroServiceImpl implements LivroService {
         return salvo;
     }
 
+    @Override
     public LivroAtual definirLivroAtual(Integer idUsuario, String isbn) {
         // Verifica se o usuário existe no banco, lança exceção se não existir
         Usuario usuario = verificarUsuarioBanco(idUsuario);
