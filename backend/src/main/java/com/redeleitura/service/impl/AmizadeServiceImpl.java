@@ -49,12 +49,18 @@ public class AmizadeServiceImpl implements AmizadeService {
         return "Solicitação de amizade enviada com sucesso.";
     }
     @Override
-    public String aceitarSolicitacao(Integer idSolicitacao) {
-        return null;
+    public String aceitarSolicitacao(Long idSolicitacao) {
+        Amizade amizade = amizadeRepository.findById(idSolicitacao)
+                .orElseThrow(() -> new RuntimeException("Solicitação não encontrada"));
+
+        amizade.setStatus(StatusAmizade.ACEITA);
+        amizadeRepository.save(amizade);
+
+        return "Solicitação de amizade aceita.";
     }
 
     @Override
-    public String removerSolicitacao(Integer idSolicitacao) {
+    public String removerSolicitacao(Long idSolicitacao) {
         return null;
     }
 

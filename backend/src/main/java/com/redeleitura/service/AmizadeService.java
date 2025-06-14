@@ -6,8 +6,8 @@ import com.redeleitura.dto.UsuarioDTO;
 
 public interface AmizadeService {
     String enviarSolicitacao(Integer idSolicitante, Integer idSolicitado);
-    String aceitarSolicitacao(Integer idSolicitacao);
-    String removerSolicitacao(Integer idSolicitacao);
+    String aceitarSolicitacao(Long idSolicitacao);
+    String removerSolicitacao(Long idSolicitacao);
     List<UsuarioDTO> listarAmigos();
 }
 
