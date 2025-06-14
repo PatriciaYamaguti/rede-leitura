@@ -20,6 +20,10 @@ public interface AmizadeRepository extends JpaRepository<Amizade, Long> {
             @Param("u2") Usuario u2,
             @Param("status") List<StatusAmizade> status);
 
+    @Query("SELECT a FROM Amizade a WHERE (a.solicitante = :usuario OR a.solicitado = :usuario) AND a.status = :status")
+    List<Amizade> findByStatusAndUsuario(@Param("status") StatusAmizade status, @Param("usuario") Usuario usuario);
+
+
     List<Amizade> findBySolicitadoAndStatus(Usuario solicitado, StatusAmizade status);
 
     List<Amizade> findBySolicitanteAndStatus(Usuario solicitante, StatusAmizade status);

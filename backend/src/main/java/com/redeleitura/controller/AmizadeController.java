@@ -1,5 +1,6 @@
 package com.redeleitura.controller;
 
+import com.redeleitura.dto.AmigoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.redeleitura.service.AmizadeService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/amizade")
@@ -31,7 +34,11 @@ public class AmizadeController {
     public String removerSolicitacao(@RequestParam Long idSolicitacao) {
         return amizadeService.removerSolicitacao(idSolicitacao);
     }
-    
+
+    @PostMapping("/listar")
+    public List<AmigoDTO> listarAmizades(@RequestParam Integer idUsuario) {
+        return amizadeService.listarAmigos(idUsuario);
+    }
 }
 
 

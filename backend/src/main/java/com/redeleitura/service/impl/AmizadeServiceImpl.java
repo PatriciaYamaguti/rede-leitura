@@ -1,8 +1,11 @@
 package com.redeleitura.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import com.redeleitura.dto.AmigoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +35,7 @@ public class AmizadeServiceImpl implements AmizadeService {
             .orElseThrow(() -> new RuntimeException("Solicitado não encontrado"));
 
         Optional<Amizade> existente = amizadeRepository.findRelacionamentoEntreUsuarios(
-                solicitante, solicitado, List.of(StatusAmizade.PENDENTE, StatusAmizade.ACEITA, StatusAmizade.RECUSADA)
+                solicitante, solicitado, Arrays.asList(StatusAmizade.values())
         );
 
         if (existente.isPresent()) {
@@ -87,8 +90,25 @@ public class AmizadeServiceImpl implements AmizadeService {
     }
 
     @Override
-    public List<UsuarioDTO> listarAmigos() {
-        return null;
+    public List<AmigoDTO> listarAmigos(Integer idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        List<Amizade> amizades = amizadeRepository.findByStatusAndUsuario(StatusAmizade.ACEITA, usuario);
+
+        List<AmigoDTO> amigos = new ArrayList<>();
+        for (Amizade am : amizades) {
+            Usuario amigo;
+
+            if(am.getSolicitante().equals(usuario)) {
+                amigo = am.getSolicitado();
+            } else {
+                amigo = am.getSolicitante();
+            }
+            amigos.add(new AmigoDTO(amigo.getId(), amigo.getNome()));
+        }
+
+        return amigos;
     }
 
 }
