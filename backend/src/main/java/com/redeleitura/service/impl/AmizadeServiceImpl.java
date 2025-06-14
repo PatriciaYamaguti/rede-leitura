@@ -61,7 +61,13 @@ public class AmizadeServiceImpl implements AmizadeService {
 
     @Override
     public String removerSolicitacao(Long idSolicitacao) {
-        return null;
+        Amizade amizade = amizadeRepository.findById(idSolicitacao)
+                .orElseThrow(() -> new RuntimeException("Solicitação não encontrada"));
+
+        amizade.setStatus(StatusAmizade.RECUSADA);
+        amizadeRepository.save(amizade);
+
+        return "Solicitação de amizade recusada.";
     }
 
     @Override

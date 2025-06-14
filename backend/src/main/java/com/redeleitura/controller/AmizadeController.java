@@ -26,6 +26,13 @@ public class AmizadeController {
     public String aceitarSolicitacao(@RequestParam Long idSolicitacao) {
         return amizadeService.aceitarSolicitacao(idSolicitacao);
     }
+
+    @PostMapping("/recusar")
+    public String removerSolicitacao(@RequestParam Long idSolicitacao) {
+        return amizadeService.removerSolicitacao(idSolicitacao);
+    }
+    
 }
+
 
 
