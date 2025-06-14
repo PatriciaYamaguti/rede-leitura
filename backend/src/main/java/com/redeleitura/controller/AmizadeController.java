@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.redeleitura.service.AmizadeService;
 
 @RestController
-@RequestMapping("/amizade")
+@RequestMapping("/api/amizade")
 public class AmizadeController {
 
     @Autowired

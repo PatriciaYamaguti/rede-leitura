@@ -32,31 +32,43 @@ public class AmizadeServiceImpl implements AmizadeService {
             .orElseThrow(() -> new RuntimeException("Solicitado não encontrado"));
 
         Optional<Amizade> existente = amizadeRepository.findRelacionamentoEntreUsuarios(
-                solicitante, solicitado, List.of(StatusAmizade.PENDENTE, StatusAmizade.ACEITA)
+                solicitante, solicitado, List.of(StatusAmizade.PENDENTE, StatusAmizade.ACEITA, StatusAmizade.RECUSADA)
         );
 
         if (existente.isPresent()) {
-            return "Já existe uma solicitação ou amizade entre esses usuários.";
+            Amizade amizade = existente.get();
+
+            if (amizade.getStatus().equals(StatusAmizade.RECUSADA)) {
+                amizade.setStatus(StatusAmizade.PENDENTE);
+                amizadeRepository.save(amizade);  // Faz UPDATE
+            } else {
+                return "Já existe uma solicitação ou amizade entre esses usuários.";
+            }
+        } else {
+            Amizade amizade = new Amizade();
+            amizade.setSolicitante(solicitante);
+            amizade.setSolicitado(solicitado);
+            amizade.setStatus(StatusAmizade.PENDENTE);
+
+            amizadeRepository.save(amizade);  // Faz INSERT
         }
-
-        Amizade amizade = new Amizade();
-        amizade.setSolicitante(solicitante);
-        amizade.setSolicitado(solicitado);
-        amizade.setStatus(StatusAmizade.PENDENTE);
-
-        amizadeRepository.save(amizade);
 
         return "Solicitação de amizade enviada com sucesso.";
     }
+
     @Override
     public String aceitarSolicitacao(Long idSolicitacao) {
         Amizade amizade = amizadeRepository.findById(idSolicitacao)
                 .orElseThrow(() -> new RuntimeException("Solicitação não encontrada"));
 
-        amizade.setStatus(StatusAmizade.ACEITA);
-        amizadeRepository.save(amizade);
+        if(amizade.getStatus() == StatusAmizade.PENDENTE) {
+            amizade.setStatus(StatusAmizade.ACEITA);
+            amizadeRepository.save(amizade);
 
-        return "Solicitação de amizade aceita.";
+            return "Solicitação de amizade aceita.";
+        }
+
+        return "Os usuários já são amigos ou não há uma solicitação pendente.";
     }
 
     @Override
@@ -64,10 +76,14 @@ public class AmizadeServiceImpl implements AmizadeService {
         Amizade amizade = amizadeRepository.findById(idSolicitacao)
                 .orElseThrow(() -> new RuntimeException("Solicitação não encontrada"));
 
-        amizade.setStatus(StatusAmizade.RECUSADA);
-        amizadeRepository.save(amizade);
+        if(!(amizade.getStatus() == StatusAmizade.RECUSADA)) {
+            amizade.setStatus(StatusAmizade.RECUSADA);
+            amizadeRepository.save(amizade);
 
-        return "Solicitação de amizade recusada.";
+            return "Solicitação de amizade recusada.";
+        }
+
+        return "Não há amizade nem solicitação pendente entre os usuários.";
     }
 
     @Override
