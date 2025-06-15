@@ -6,13 +6,13 @@ import Login from './pages/Login'
 function App() {
   
   return (
-    <>
+    <div>
       <Routes>
         <Route path="/" element={<></>} />
         <Route path="/cadastrar" element={<Cadastro />} />
         <Route path="/logar" element={<Login />} />
       </Routes>
-    </>
+    </div>
   )
 }
 

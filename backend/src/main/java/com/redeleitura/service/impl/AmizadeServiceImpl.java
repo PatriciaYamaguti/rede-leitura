@@ -1,10 +1,9 @@
 package com.redeleitura.service.impl;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
-import com.redeleitura.entity.LivrosLidos;
+import com.redeleitura.mapper.UsuarioLivrosEmComumMapper;
 import com.redeleitura.repository.LivrosLidosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,8 +23,13 @@ public class AmizadeServiceImpl implements AmizadeService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
     @Autowired
     private LivrosLidosRepository livrosLidosRepository;
+    @Autowired
+    private LivrosEmComumService livrosEmComumService;
+    @Autowired
+    private UsuarioLivrosEmComumMapper usuarioLivrosEmComumMapper;
 
     @Override
     public String enviarSolicitacao(Integer idSolicitante, Integer idSolicitado) {
@@ -42,19 +46,27 @@ public class AmizadeServiceImpl implements AmizadeService {
         if (existente.isPresent()) {
             Amizade amizade = existente.get();
 
+            //FAZER O UPDATE NO BANCO
             if (amizade.getStatus().equals(StatusAmizade.RECUSADA)) {
                 amizade.setStatus(StatusAmizade.PENDENTE);
-                amizadeRepository.save(amizade);  // Faz UPDATE
+
+                if(!amizade.getSolicitante().equals(solicitante)) {
+                    amizade.setSolicitante(solicitante);
+                    amizade.setSolicitado(solicitado);
+                }
+
+                amizadeRepository.save(amizade);
             } else {
                 return "Já existe uma solicitação ou amizade entre esses usuários.";
             }
+        // FAZER O INSERT NO BANCO
         } else {
             Amizade amizade = new Amizade();
             amizade.setSolicitante(solicitante);
             amizade.setSolicitado(solicitado);
             amizade.setStatus(StatusAmizade.PENDENTE);
 
-            amizadeRepository.save(amizade);  // Faz INSERT
+            amizadeRepository.save(amizade);
         }
 
         return "Solicitação de amizade enviada com sucesso.";
@@ -97,46 +109,12 @@ public class AmizadeServiceImpl implements AmizadeService {
 
         List<Amizade> amizades = amizadeRepository.findByStatusAndUsuario(StatusAmizade.ACEITA, usuario);
 
-        // Lista de amigos (apenas os objetos Usuario)
         List<Usuario> amigos = amizades.stream()
                 .map(am -> am.getSolicitante().equals(usuario) ? am.getSolicitado() : am.getSolicitante())
                 .toList();
 
-        // Buscar os livros que o usuário atual leu
-        List<LivrosLidos> livrosUsuarioAtual = livrosLidosRepository.findByUsuario(usuario);
-        Set<String> livrosLidosIsbns = livrosUsuarioAtual.stream()
-                .map(LivrosLidos::getIsbn)
-                .collect(Collectors.toSet());
+        Map<Usuario, Long> usuarioComumLivrosMap = livrosEmComumService.calcularLivrosEmComum(usuario, amigos);
 
-        // Buscar os livros em comum apenas entre o usuário e os amigos
-        Map<Usuario, Long> usuarioComumLivrosMap = buscarUsuariosELivrosEmComum(livrosLidosIsbns, amigos);
-
-        // Montar a lista de DTOs
-        return usuarioComumLivrosMap.entrySet().stream()
-                .map(entry -> new UsuarioLivrosEmComumDTO(
-                        entry.getValue(),
-                        entry.getKey().getNome(),
-                        entry.getKey().getDescricao(),
-                        entry.getKey().getUsuario()
-                ))
-                .toList();
-    }
-
-    private Map<Usuario, Long> buscarUsuariosELivrosEmComum(Set<String> livrosLidosIsbns, List<Usuario> amigos) {
-        Map<Usuario, Long> resultado = new HashMap<>();
-
-        for (Usuario amigo : amigos) {
-            List<LivrosLidos> livrosDoAmigo = livrosLidosRepository.findByUsuario(amigo);
-
-            long quantidadeEmComum = livrosDoAmigo.stream()
-                    .filter(livro -> livrosLidosIsbns.contains(livro.getIsbn()))
-                    .count();
-
-            if (quantidadeEmComum > 0) {
-                resultado.put(amigo, quantidadeEmComum);
-            }
-        }
-
-        return resultado;
+        return usuarioLivrosEmComumMapper.toDTOList(usuarioComumLivrosMap, false);
     }
 }

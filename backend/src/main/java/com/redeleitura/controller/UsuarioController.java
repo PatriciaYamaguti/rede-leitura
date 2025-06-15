@@ -18,16 +18,16 @@ public class UsuarioController {
 
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody UsuarioDTO usuarioDTO) {
-        try {
-            UsuarioDTO usuario = usuarioService.cadastrarUsuario(usuarioDTO);
-            return ResponseEntity.ok(usuario);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return usuarioService.cadastrarUsuario(usuarioDTO);
     }
 
     @GetMapping("/interesses/{idUsuario}")
     public ResponseEntity<List<UsuarioLivrosEmComumDTO>> listarPorInteresse(@PathVariable Integer idUsuario) {
         return ResponseEntity.ok(usuarioService.listarUsuariosPorInteresses(idUsuario));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> atualizar(@PathVariable Integer id, @RequestBody UsuarioDTO usuarioDTO) {
+        return usuarioService.atualizarUsuario(id, usuarioDTO);
     }
 }
