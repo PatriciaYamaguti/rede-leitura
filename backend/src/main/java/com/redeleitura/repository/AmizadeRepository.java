@@ -1,6 +1,7 @@
 package com.redeleitura.repository;
 
 import com.redeleitura.entity.Amizade;
+import com.redeleitura.entity.AmizadeLog;
 import com.redeleitura.entity.Usuario;
 import com.redeleitura.enums.StatusAmizade;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +29,12 @@ public interface AmizadeRepository extends JpaRepository<Amizade, Long> {
     @Modifying
     @Query("DELETE FROM Amizade a WHERE a.solicitante.id = :userId OR a.solicitado.id = :userId")
     void deleteByUsuarioId(@Param("userId") Integer userId);
+
+    @Query("SELECT a FROM Amizade a WHERE a.solicitante = :usuario OR a.solicitado = :usuario")
+    List<Amizade> findAllByUsuario(@Param("usuario") Usuario usuario);
+
+    @Query("SELECT l FROM AmizadeLog l WHERE l.amizade = :amizade ORDER BY l.dataHora DESC")
+    List<AmizadeLog> findTopByAmizadeOrderByDataHoraDesc(@Param("amizade") Amizade amizade, Pageable pageable);
 
     List<Amizade> findBySolicitadoAndStatus(Usuario solicitado, StatusAmizade status);
 

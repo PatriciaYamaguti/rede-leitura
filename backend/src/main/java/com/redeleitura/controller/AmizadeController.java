@@ -1,12 +1,10 @@
 package com.redeleitura.controller;
 
+import com.redeleitura.dto.AmizadeLogDTO;
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.redeleitura.service.amizade.AmizadeService;
 
@@ -39,6 +37,11 @@ public class AmizadeController {
     @PostMapping("/listar")
     public List<UsuarioLivrosEmComumDTO> listarAmizades(@RequestParam Integer idUsuario) {
         return amizadeService.listarAmigos(idUsuario);
+    }
+
+    @GetMapping()
+    public List<AmizadeLogDTO> listarAmizadeLog(Integer idUsuario) {
+        return amizadeService.listarAmizadeLog(idUsuario);
     }
 }
 

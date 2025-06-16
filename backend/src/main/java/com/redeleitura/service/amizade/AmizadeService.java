@@ -2,6 +2,7 @@ package com.redeleitura.service.amizade;
 
 import java.util.List;
 
+import com.redeleitura.dto.AmizadeLogDTO;
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import org.springframework.http.ResponseEntity;
 
@@ -10,6 +11,7 @@ public interface AmizadeService {
     ResponseEntity<?> aceitarSolicitacao(Long idSolicitacao);
     ResponseEntity<?> removerSolicitacao(Long idSolicitacao);
     List<UsuarioLivrosEmComumDTO> listarAmigos(Integer idUsuario);
+    List<AmizadeLogDTO> listarAmizadeLog(Integer idUsuario);
 }
 
  

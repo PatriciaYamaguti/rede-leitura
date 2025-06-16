@@ -1,9 +1,14 @@
 package com.redeleitura.service.amizade;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
+import com.redeleitura.dto.AmizadeLogDTO;
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
+import com.redeleitura.entity.AmizadeLog;
+import com.redeleitura.mapper.AmizadeLogMapper;
 import com.redeleitura.mapper.UsuarioLivrosEmComumMapper;
+import com.redeleitura.repository.AmizadeLogRepository;
 import com.redeleitura.repository.LivrosLidosRepository;
 import com.redeleitura.service.livro.LivrosEmComumService;
 import jakarta.transaction.Transactional;
@@ -29,11 +34,16 @@ public class AmizadeServiceImpl implements AmizadeService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private LivrosLidosRepository livrosLidosRepository;
-    @Autowired
     private LivrosEmComumService livrosEmComumService;
+
     @Autowired
     private UsuarioLivrosEmComumMapper usuarioLivrosEmComumMapper;
+
+    @Autowired
+    private AmizadeLogMapper amizadeLogMapper;
+
+    @Autowired
+    private AmizadeLogRepository amizadeLogRepository;
 
     @Override
     public ResponseEntity<?> enviarSolicitacao(Integer idSolicitante, Integer idSolicitado) {
@@ -60,6 +70,7 @@ public class AmizadeServiceImpl implements AmizadeService {
                 }
 
                 amizadeRepository.save(amizade);
+                registrarLogAmizade(amizade, solicitado, "Solicitação recebida.");
             } else {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Já existe uma solicitação ou amizade entre esses usuários.");
             }
@@ -71,6 +82,7 @@ public class AmizadeServiceImpl implements AmizadeService {
             amizade.setStatus(StatusAmizade.PENDENTE);
 
             amizadeRepository.save(amizade);
+            registrarLogAmizade(amizade, solicitado, "Solicitação recebida.");
         }
 
         return ResponseEntity.ok("Solicitação de amizade enviada com sucesso.");
@@ -84,6 +96,8 @@ public class AmizadeServiceImpl implements AmizadeService {
         if(amizade.getStatus() == StatusAmizade.PENDENTE) {
             amizade.setStatus(StatusAmizade.ACEITA);
             amizadeRepository.save(amizade);
+
+            registrarLogAmizade(amizade, amizade.getSolicitante(), "Solicitação aceita.");
 
             return ResponseEntity.ok("Solicitação de amizade aceita.");
         }
@@ -99,6 +113,8 @@ public class AmizadeServiceImpl implements AmizadeService {
         if(!(amizade.getStatus() == StatusAmizade.RECUSADA)) {
             amizade.setStatus(StatusAmizade.RECUSADA);
             amizadeRepository.save(amizade);
+
+            limparLogAmizade(amizade);
 
             return ResponseEntity.ok("Solicitação ou amizade removida com sucesso.");
         }
@@ -120,5 +136,57 @@ public class AmizadeServiceImpl implements AmizadeService {
         Map<Usuario, Long> usuarioComumLivrosMap = livrosEmComumService.calcularLivrosEmComum(usuario, amigos);
 
         return usuarioLivrosEmComumMapper.toDTOList(usuarioComumLivrosMap, false);
+    }
+
+    @Override
+    public List<AmizadeLogDTO> listarAmizadeLog(Integer idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        // Buscar todas as amizades onde o usuário está envolvido
+        List<Amizade> amizades = amizadeRepository.findAllByUsuario(usuario);
+
+        List<AmizadeLogDTO> resultado = new ArrayList<>();
+
+        for (Amizade amizade : amizades) {
+            // Buscar apenas o log ativo daquela amizade
+            List<AmizadeLog> logsAtivos = amizadeLogRepository.findByAmizadeAndUsuarioIdAndAtivaTrueOrderByDataHoraDesc(amizade, idUsuario);
+
+            for (AmizadeLog log : logsAtivos) {
+                Usuario outroUsuario = amizade.getSolicitante().getId().equals(idUsuario)
+                        ? amizade.getSolicitado()
+                        : amizade.getSolicitante();
+
+                AmizadeLogDTO dto = amizadeLogMapper.toDTO(log, outroUsuario);
+                resultado.add(dto);
+            }
+        }
+
+        return resultado;
+    }
+
+    @Transactional
+    public void registrarLogAmizade(Amizade amizade, Usuario usuarioAcao, String descricao) {
+        limparLogAmizade(amizade);
+
+        AmizadeLog novoLog = new AmizadeLog();
+        novoLog.setAmizade(amizade);
+        novoLog.setUsuario(usuarioAcao);
+        novoLog.setDescricao(descricao);
+        novoLog.setStatus(amizade.getStatus());
+        novoLog.setAtiva(true);
+        novoLog.setDataHora(LocalDateTime.now());
+
+        amizadeLogRepository.save(novoLog);
+    }
+
+    @Transactional
+    public void limparLogAmizade(Amizade amizade) {
+        List<AmizadeLog> logsAtivos = amizadeLogRepository.findByAmizadeAndAtivaTrueOrderByDataHoraDesc(amizade);
+
+        for (AmizadeLog log : logsAtivos) {
+            log.setAtiva(false);
+        }
+        amizadeLogRepository.saveAll(logsAtivos);
     }
 }

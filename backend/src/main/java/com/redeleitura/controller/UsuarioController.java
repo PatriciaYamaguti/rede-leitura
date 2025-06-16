@@ -2,6 +2,8 @@ package com.redeleitura.controller;
 
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import com.redeleitura.dto.UsuarioDTO;
+import com.redeleitura.service.amizade.AmizadeService;
+import com.redeleitura.service.amizade.AmizadeServiceImpl;
 import com.redeleitura.service.usuario.UsuarioServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
