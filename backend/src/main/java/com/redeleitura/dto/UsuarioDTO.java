@@ -12,9 +12,6 @@ public class UsuarioDTO {
     private AcessoDTO acesso;
     private LivroAtualDTO livroAtual;
     private LocalDateTime dataCadastro;
-
-    public UsuarioDTO(Usuario usuario) {}
-
     public UsuarioDTO() {}
 
     public UsuarioDTO(String nome, String usuario, String descricao, AcessoDTO acesso, LocalDateTime dataCadastro) {

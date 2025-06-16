@@ -1,4 +1,4 @@
-package com.redeleitura.service.impl;
+package com.redeleitura.service.livro;
 
 import com.redeleitura.entity.LivrosLidos;
 import com.redeleitura.entity.Usuario;

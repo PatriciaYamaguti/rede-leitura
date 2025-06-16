@@ -2,12 +2,13 @@ package com.redeleitura.controller;
 
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.redeleitura.service.AmizadeService;
+import com.redeleitura.service.amizade.AmizadeService;
 
 import java.util.List;
 
@@ -19,19 +20,19 @@ public class AmizadeController {
     private AmizadeService amizadeService;
 
     @PostMapping("/solicitar")
-    public String enviarSolicitacao(
+    public ResponseEntity<?> enviarSolicitacao(
             @RequestParam Integer idSolicitante,
             @RequestParam Integer idSolicitado) {
         return amizadeService.enviarSolicitacao(idSolicitante, idSolicitado);
     }
 
     @PostMapping("/aceitar")
-    public String aceitarSolicitacao(@RequestParam Long idSolicitacao) {
+    public ResponseEntity<?> aceitarSolicitacao(@RequestParam Long idSolicitacao) {
         return amizadeService.aceitarSolicitacao(idSolicitacao);
     }
 
     @PostMapping("/recusar")
-    public String removerSolicitacao(@RequestParam Long idSolicitacao) {
+    public ResponseEntity<?> removerSolicitacao(@RequestParam Long idSolicitacao) {
         return amizadeService.removerSolicitacao(idSolicitacao);
     }
 

@@ -4,6 +4,7 @@ import com.redeleitura.entity.Amizade;
 import com.redeleitura.entity.Usuario;
 import com.redeleitura.enums.StatusAmizade;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -23,6 +24,9 @@ public interface AmizadeRepository extends JpaRepository<Amizade, Long> {
     @Query("SELECT a FROM Amizade a WHERE (a.solicitante = :usuario OR a.solicitado = :usuario) AND a.status = :status")
     List<Amizade> findByStatusAndUsuario(@Param("status") StatusAmizade status, @Param("usuario") Usuario usuario);
 
+    @Modifying
+    @Query("DELETE FROM Amizade a WHERE a.solicitante.id = :userId OR a.solicitado.id = :userId")
+    void deleteByUsuarioId(@Param("userId") Integer userId);
 
     List<Amizade> findBySolicitadoAndStatus(Usuario solicitado, StatusAmizade status);
 

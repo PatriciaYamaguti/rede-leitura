@@ -1,4 +1,4 @@
-package com.redeleitura.service.impl;
+package com.redeleitura.service.livro;
 
 import java.util.Optional;
 
@@ -12,7 +12,6 @@ import com.redeleitura.entity.Usuario;
 import com.redeleitura.repository.LivroAtualRepository;
 import com.redeleitura.repository.LivrosLidosRepository;
 import com.redeleitura.repository.UsuarioRepository;
-import com.redeleitura.service.LivroService;
 import com.redeleitura.util.GoogleBooksUtil;
 
 @Service

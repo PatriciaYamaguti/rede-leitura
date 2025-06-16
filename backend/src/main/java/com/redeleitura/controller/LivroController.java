@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.redeleitura.entity.LivroAtual;
 import com.redeleitura.entity.LivrosLidos;
-import com.redeleitura.service.impl.LivroServiceImpl;
+import com.redeleitura.service.livro.LivroServiceImpl;
 import com.redeleitura.util.GoogleBooksUtil;
 
 @RestController

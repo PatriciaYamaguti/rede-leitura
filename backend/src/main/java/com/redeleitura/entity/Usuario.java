@@ -30,6 +30,9 @@ public class Usuario {
     @Column(name = "data_cadastro")
     private LocalDateTime dataCadastro = LocalDateTime.now();
 
+    @Column(name = "data_expiracao")
+    private LocalDateTime dataExpiracao;
+
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     private Acesso acesso;
 
@@ -94,5 +97,9 @@ public class Usuario {
     public String getDescricao() { return descricao; }
 
     public void setDescricao(String descricao) { this.descricao = descricao; }
+
+    public LocalDateTime getDataExpiracao() { return dataExpiracao; }
+
+    public void setDataExpiracao(LocalDateTime dataExpiracao) { this.dataExpiracao = dataExpiracao; }
 }
 

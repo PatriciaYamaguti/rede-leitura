@@ -1,4 +1,4 @@
-package com.redeleitura.service;
+package com.redeleitura.service.usuario;
 
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import com.redeleitura.dto.UsuarioDTO;
@@ -15,7 +15,9 @@ public interface UsuarioService {
 
     ResponseEntity<?> atualizarUsuario(Integer id, UsuarioDTO usuarioDTO);
 
-    public List<UsuarioLivrosEmComumDTO> listarUsuariosPorInteresses(Integer idUsuario);
+    List<UsuarioLivrosEmComumDTO> listarUsuariosPorInteresses(Integer idUsuario);
 
-    void deletarUsuario(Long id);
+    ResponseEntity<?> deletarUsuario(Integer id);
+
+    ResponseEntity<?> logarUsuario(UsuarioDTO usuarioDTO);
 }

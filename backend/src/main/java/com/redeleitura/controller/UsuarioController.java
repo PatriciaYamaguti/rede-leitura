@@ -2,8 +2,7 @@ package com.redeleitura.controller;
 
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import com.redeleitura.dto.UsuarioDTO;
-import com.redeleitura.entity.Usuario;
-import com.redeleitura.service.impl.UsuarioServiceImpl;
+import com.redeleitura.service.usuario.UsuarioServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,5 +28,15 @@ public class UsuarioController {
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizar(@PathVariable Integer id, @RequestBody UsuarioDTO usuarioDTO) {
         return usuarioService.atualizarUsuario(id, usuarioDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> remover(@PathVariable Integer id) {
+        return usuarioService.deletarUsuario(id);
+    }
+
+    @PostMapping("/logar")
+    public ResponseEntity<?> logar(@RequestBody UsuarioDTO usuarioDTO) {
+        return usuarioService.logarUsuario(usuarioDTO);
     }
 }

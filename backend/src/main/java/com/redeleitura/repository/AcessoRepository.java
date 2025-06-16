@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface AcessoRepository extends JpaRepository<Acesso, Long> {
     List<Acesso> findByUsuarioId(long id);
-    Optional<Acesso> findByUsuarioIdAndTipoAcesso(long usuarioId, String tipoAcesso);
+
+    Optional<Acesso> findByUsuarioIdAndSenha(Integer usuarioId, String senha);
 }

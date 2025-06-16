@@ -1,4 +1,4 @@
-package com.redeleitura.service.impl;
+package com.redeleitura.service.usuario;
 
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import com.redeleitura.dto.UsuarioDTO;
@@ -7,8 +7,9 @@ import com.redeleitura.entity.Usuario;
 import com.redeleitura.mapper.UsuarioLivrosEmComumMapper;
 import com.redeleitura.mapper.UsuarioMapper;
 import com.redeleitura.repository.AcessoRepository;
+import com.redeleitura.repository.AmizadeRepository;
 import com.redeleitura.repository.UsuarioRepository;
-import com.redeleitura.service.UsuarioService;
+import com.redeleitura.service.livro.LivrosEmComumService;
 import com.redeleitura.util.HashUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -34,9 +37,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     private LivrosEmComumService livrosEmComumService;
     @Autowired
     private UsuarioLivrosEmComumMapper usuarioLivrosEmComumMapper;
+    @Autowired
+    private AmizadeRepository amizadeRepository;
 
     @Override
-    @Transactional
     public ResponseEntity<?> cadastrarUsuario(UsuarioDTO usuarioDTO) {
         Optional<Usuario> usuarioExistente = usuarioRepository.findByUsuario(usuarioDTO.getUsuario());
 
@@ -44,12 +48,12 @@ public class UsuarioServiceImpl implements UsuarioService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Já existe um usuário com o mesmo nome de usuário.");
         }
 
-        // Gerar senha criptografada
         String senhaHash = HashUtil.gerarHashSHA256(usuarioDTO.getAcesso().getSenha());
 
         Usuario usuario = usuarioMapper.toUsuarioEntity(usuarioDTO);
         Acesso acesso = new Acesso(usuario, "USER", senhaHash);
         usuario.setAcesso(acesso);
+        usuario.setDataCadastro(LocalDateTime.now());
 
         usuarioRepository.save(usuario);
         acessoRepository.save(acesso);
@@ -69,7 +73,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return usuarioLivrosEmComumMapper.toDTOList(usuarioComumLivrosMap, true);
     }
-
 
     @Override
     public Optional<Usuario> buscarUsuarioPorId(Integer id) {
@@ -99,7 +102,34 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public void deletarUsuario(Long id) {
+    public ResponseEntity<?> deletarUsuario(Integer id) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+        if (usuarioOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
+        }
 
+        Usuario usuario = usuarioOptional.get();
+        usuario.setDataExpiracao(LocalDateTime.now());
+        amizadeRepository.deleteByUsuarioId(usuario.getId());
+
+        usuarioRepository.save(usuario);
+
+        return ResponseEntity.ok("Usuário deletado com sucesso.");
+    }
+
+    @Override
+    public ResponseEntity<?> logarUsuario(UsuarioDTO usuarioDTO) {
+        Optional<Usuario> usuarioExistente = usuarioRepository.findByUsuario(usuarioDTO.getUsuario());
+        if (usuarioExistente.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Nome de usuário não existente.");
+        }
+
+        Usuario usuario = usuarioExistente.get();
+        Optional<Acesso> acessoOptional = acessoRepository.findByUsuarioIdAndSenha(usuario.getId(), HashUtil.gerarHashSHA256(usuarioDTO.getAcesso().getSenha()));
+        if (acessoOptional.isPresent()) {
+            return ResponseEntity.ok("Usuário logado com sucesso.");
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Senha incorreta.");
     }
 }
