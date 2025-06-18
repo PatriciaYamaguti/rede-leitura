@@ -15,7 +15,6 @@ public class AmizadeLogMapper {
                 log.getAmizade() != null ? log.getAmizade().getId() : null,
                 log.getDescricao(),
                 log.getStatus(),
-                log.isAtiva(),
                 log.getDataHora()
         );
     }

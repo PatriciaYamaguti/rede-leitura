@@ -14,19 +14,17 @@ public class AmizadeLogDTO {
     private Integer idAmizade;
     private String descricao;
     private StatusAmizade status;
-    private boolean ativa;
     private LocalDateTime dataHora;
 
     public AmizadeLogDTO() {}
 
-    public AmizadeLogDTO(Integer idUsuario, String nomeUsuario, Integer idAmizade, String descricao, StatusAmizade status, boolean ativa, LocalDateTime dataHora) {
+    public AmizadeLogDTO(Integer idUsuario, String nomeUsuario, Integer idAmizade, String descricao, StatusAmizade status, LocalDateTime dataHora) {
         this.idUsuario = idUsuario;
         this.nomeUsuario = nomeUsuario;
         this.idAmizade = idAmizade;
         this.descricao = descricao;
         this.status = status;
         this.dataHora = dataHora;
-        this.ativa = ativa;
     }
 
     public LocalDateTime getDataHora() {
@@ -35,14 +33,6 @@ public class AmizadeLogDTO {
 
     public void setDataHora(LocalDateTime dataHora) {
         this.dataHora = dataHora;
-    }
-
-    public boolean isAtiva() {
-        return ativa;
-    }
-
-    public void setAtiva(boolean ativa) {
-        this.ativa = ativa;
     }
 
     public String getDescricao() {

@@ -48,6 +48,10 @@ public class UsuarioServiceImpl implements UsuarioService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Já existe um usuário com o mesmo nome de usuário.");
         }
 
+        if(!validarUsuario(usuarioDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Informações do usuário não correspondem as validações corretas.");
+        }
+
         String senhaHash = HashUtil.gerarHashSHA256(usuarioDTO.getAcesso().getSenha());
 
         Usuario usuario = usuarioMapper.toUsuarioEntity(usuarioDTO);
@@ -58,6 +62,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.save(usuario);
         acessoRepository.save(acesso);
         return ResponseEntity.ok("Cadastro realizado com sucesso.");
+    }
+
+    private boolean validarUsuario(UsuarioDTO usuarioDTO) {
+        return usuarioDTO.getUsuario().length() <= 20 || usuarioDTO.getNome().length() <= 80;
     }
 
     @Override
