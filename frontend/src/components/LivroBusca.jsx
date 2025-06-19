@@ -1,10 +1,15 @@
 import { useState } from "react";
-import { buscarLivrosPorTitulo } from "../services/api/livro";
+import {
+  buscarLivrosPorTitulo,
+  definirLivroAtual,
+  marcarLivroComoLido,
+} from "../services/api/livro";
 
 function LivroBusca({ idUsuario }) {
   const [titulo, setTitulo] = useState("");
   const [sugestoes, setSugestoes] = useState([]);
   const [selecionado, setSelecionado] = useState(null);
+  const [mensagem, setMensagem] = useState("");
 
   const buscarLivros = async () => {
     const resposta = await buscarLivrosPorTitulo(titulo);
@@ -19,6 +24,17 @@ function LivroBusca({ idUsuario }) {
     setSelecionado(livro);
     setSugestoes([]);
     setTitulo(livro.titulo);
+    setMensagem("");
+  };
+
+  const definirAtual = async () => {
+    const resposta = await definirLivroAtual(idUsuario, selecionado.isbn);
+    setMensagem(resposta.mensagem);
+  };
+
+  const marcarLido = async () => {
+    const resposta = await marcarLivroComoLido(idUsuario, selecionado.isbn);
+    setMensagem(resposta.mensagem);
   };
 
   return (
@@ -36,6 +52,7 @@ function LivroBusca({ idUsuario }) {
             onChange={(e) => {
               setTitulo(e.target.value);
               setSelecionado(null);
+              setMensagem("");
             }}
             className="flex-grow border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring focus:ring-[#a99484]"
           />
@@ -63,10 +80,30 @@ function LivroBusca({ idUsuario }) {
 
         {selecionado && (
           <div className="mt-6 border p-4 rounded bg-gray-50 text-center">
-            <p className="mb-2 text-gray-800">
+            <p className="mb-3 text-gray-800">
               <strong>{selecionado.titulo}</strong> — {selecionado.autor}
             </p>
+            <div className="flex justify-center space-x-3">
+              <button
+                onClick={definirAtual}
+                className="bg-yellow-500 text-white px-4 py-1 rounded-md hover:bg-yellow-600"
+              >
+                Definir como atual
+              </button>
+              <button
+                onClick={marcarLido}
+                className="bg-green-600 text-white px-4 py-1 rounded-md hover:bg-green-700"
+              >
+                Marcar como lido
+              </button>
+            </div>
           </div>
+        )}
+
+        {mensagem && (
+          <p className="mt-4 text-center text-blue-600 font-medium text-sm">
+            {mensagem}
+          </p>
         )}
       </div>
     </div>
