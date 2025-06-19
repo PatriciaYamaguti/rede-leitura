@@ -19,3 +19,21 @@ export async function enviarSolicitacaoAmizade(idSolicitante, idSolicitado) {
     }
 }
 
+export async function aceitarSolicitacaoAmizade(idSolicitacao) {
+    try {
+        const response = await fetch(`${BASE_URL}/aceitar?idSolicitacao=${idSolicitacao}`, {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            return { sucesso: true, mensagem: "Solicitação de amizade aceita!" };
+        } else if (response.status === 409) {
+            return { sucesso: false, mensagem: "Os usuários já são amigos ou não há uma solicitação pendente." };
+        } else {
+            return { sucesso: false, mensagem: "Erro ao aceitar a solicitação de amizade." };
+        }
+    } catch (error) {
+        console.error(error);
+        return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
+    }
+}
