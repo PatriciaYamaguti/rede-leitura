@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public class UsuarioDTO {
 
+    private Integer id;
     private String nome;
     private String usuario;
     private String descricao;
@@ -14,12 +15,13 @@ public class UsuarioDTO {
     private LocalDateTime dataCadastro;
     public UsuarioDTO() {}
 
-    public UsuarioDTO(String nome, String usuario, String descricao, AcessoDTO acesso, LocalDateTime dataCadastro) {
+    public UsuarioDTO(String nome, String usuario, String descricao, AcessoDTO acesso, LocalDateTime dataCadastro, Integer id) {
         this.nome = nome;
         this.usuario = usuario;
         this.acesso = acesso;
         this.dataCadastro = dataCadastro;
         this.descricao = descricao;
+        this.id = id;
     }
 
     public String getNome() {
@@ -60,11 +62,11 @@ public class UsuarioDTO {
         this.dataCadastro = dataCadastro;
     }
 
-    public String getDescricao() {
-        return descricao;
-    }
+    public String getDescricao() { return descricao; }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
+
+    public Integer getId() { return id; }
+
+    public void setId(Integer id) { this.id = id; }
 }

@@ -20,6 +20,7 @@ public class UsuarioMapper {
         dto.setDescricao(usuario.getDescricao());
         dto.setAcesso(toAcessoDTO(usuario.getAcesso()));
         dto.setDataCadastro(usuario.getDataCadastro());
+        dto.setId(usuario.getId());
 
         if (usuario.getLivroAtual() != null) {
             LivroAtualDTO livroAtualDTO = new LivroAtualDTO();
@@ -41,6 +42,7 @@ public class UsuarioMapper {
         usuario.setDescricao(dto.getDescricao());
         usuario.setAcesso(toAcessoEntity(dto.getAcesso()));
         usuario.setDataCadastro(dto.getDataCadastro());
+        usuario.setId(dto.getId());
 
         if (dto.getLivroAtual() != null) {
             LivroAtual livroAtual = new LivroAtual();

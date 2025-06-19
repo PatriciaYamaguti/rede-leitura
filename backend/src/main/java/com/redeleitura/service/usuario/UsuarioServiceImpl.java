@@ -133,9 +133,17 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         Usuario usuario = usuarioExistente.get();
-        Optional<Acesso> acessoOptional = acessoRepository.findByUsuarioIdAndSenha(usuario.getId(), HashUtil.gerarHashSHA256(usuarioDTO.getAcesso().getSenha()));
+        Optional<Acesso> acessoOptional = acessoRepository.findByUsuarioIdAndSenha(
+                usuario.getId(),
+                HashUtil.gerarHashSHA256(usuarioDTO.getAcesso().getSenha())
+        );
+
         if (acessoOptional.isPresent()) {
-            return ResponseEntity.ok("Usuário logado com sucesso.");
+            Map<String, Object> resposta = new HashMap<>();
+            resposta.put("mensagem", "Usuário logado com sucesso.");
+            resposta.put("idUsuario", usuario.getId());
+
+            return ResponseEntity.ok(resposta);
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Senha incorreta.");
