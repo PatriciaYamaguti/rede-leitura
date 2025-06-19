@@ -74,3 +74,19 @@ export async function listarAmigos(idUsuario) {
         return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
     }
 }
+
+export async function listarAmizadeLog(idUsuario) {
+    try {
+        const response = await fetch(`${BASE_URL}?idUsuario=${idUsuario}`);
+
+        if (response.ok) {
+            const logs = await response.json();
+            return { sucesso: true, logs: logs };
+        } else {
+            return { sucesso: false, mensagem: "Erro ao listar o log de amizades." };
+        }
+    } catch (error) {
+        console.error(error);
+        return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
+    }
+}
