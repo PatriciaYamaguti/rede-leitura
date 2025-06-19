@@ -18,7 +18,7 @@ export async function cadastrarUsuario(dadosUsuario) {
         if (response.ok) {
             return { sucesso: true, mensagem: "Cadastro realizado com sucesso!" };
         } else if (response.status === 409) {
-            return { sucesso: false, mensagem: "Usuário já cadastrado!" };
+            return { sucesso: false, mensagem: "Nome de usuário já cadastrado!" };
         } else if (response.status === 400) {
             return { sucesso: false, mensagem: "Dados inválidos! Verifique as informações enviadas." };
         } else {
@@ -40,7 +40,7 @@ export async function logarUsuario(dadosLogin) {
 
         if (response.ok) {
             const data = await response.json();
-            localStorage.setItem("id_usuario", data.idUsuario);
+            sessionStorage.setItem("idUsuario", data.idUsuario);
             return { sucesso: true, mensagem: "Login realizado com sucesso!" };
         } else if (response.status === 409) {
             return { sucesso: false, mensagem: "Nome de usuário não existente!" };
