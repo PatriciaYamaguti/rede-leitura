@@ -103,3 +103,19 @@ export async function deletarUsuario(id) {
         return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
     }
 }
+
+export async function listarUsuariosPorInteresses(idUsuario) {
+    try {
+        const response = await fetch(`${BASE_URL}/interesses/${idUsuario}`);
+
+        if (response.ok) {
+            const listaUsuarios = await response.json();
+            return { sucesso: true, usuarios: listaUsuarios };
+        } else {
+            return { sucesso: false, mensagem: "Erro ao buscar usuários por interesses!" };
+        }
+    } catch (error) {
+        console.error(error);
+        return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
+    }
+}
