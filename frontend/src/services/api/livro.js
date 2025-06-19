@@ -26,7 +26,7 @@ export async function definirLivroAtual(idUsuario, isbn) {
             const data = await response.json();
             return { sucesso: true, mensagem: `${data.titulo} foi marcado como leitura atual com sucesso!` };
         } else if (response.status === 400) {
-            return { sucesso: false, mensagem: "Usuário ou ISBN inválido." };
+            return { sucesso: false, mensagem: "Usuário não encontrado ou ISBN inválido." };
         } else {
             return { sucesso: false, mensagem: "Erro ao definir o livro atual." };
         }

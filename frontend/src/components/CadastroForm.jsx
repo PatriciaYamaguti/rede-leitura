@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { cadastrarUsuario } from "../services/api/usuario";
+import { AlertContext } from "../contexts/AlertContext";
 
 const CadastroForm = () => {
     const [nome, setNome] = useState('');
     const [usuario, setUsuario] = useState('');
     const [descricao, setDescricao] = useState('');
     const [senha, setSenha] = useState('');
+    const { showAlert } = useContext(AlertContext);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -17,10 +19,10 @@ const CadastroForm = () => {
         const resultado = await cadastrarUsuario(novoUsuario);
 
         if (resultado.sucesso) {
-            alert(resultado.mensagem)
+            showAlert(resultado.mensagem, "sucesso");
             navigate("/logar");
         } else {
-            alert(resultado.mensagem);
+            showAlert(resultado.mensagem, "erro");
         }
     };
 
