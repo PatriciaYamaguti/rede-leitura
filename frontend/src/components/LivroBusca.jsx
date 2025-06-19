@@ -3,10 +3,15 @@ import { buscarLivrosPorTitulo } from "../services/api/livro";
 
 function LivroBusca({ idUsuario }) {
   const [titulo, setTitulo] = useState("");
+  const [sugestoes, setSugestoes] = useState([]);
 
   const buscarLivros = async () => {
     const resposta = await buscarLivrosPorTitulo(titulo);
-    console.log(resposta);
+    if (resposta.sucesso) {
+      setSugestoes(resposta.livros);
+    } else {
+      setSugestoes([]);
+    }
   };
 
   return (
@@ -31,6 +36,20 @@ function LivroBusca({ idUsuario }) {
             Buscar
           </button>
         </div>
+
+        {/* Lista de sugestões */}
+        {sugestoes.length > 0 && (
+          <ul className="border border-gray-200 mt-1 rounded shadow-sm">
+            {sugestoes.map((livro) => (
+              <li
+                key={livro.isbn}
+                className="px-3 py-2 text-sm text-gray-800 border-b last:border-none"
+              >
+                <strong>{livro.titulo}</strong> — {livro.autor}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
