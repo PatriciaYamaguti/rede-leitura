@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   buscarLivrosPorTitulo,
   definirLivroAtual,
@@ -9,31 +9,15 @@ function LivroBusca({ idUsuario }) {
   const [titulo, setTitulo] = useState("");
   const [sugestoes, setSugestoes] = useState([]);
   const [selecionado, setSelecionado] = useState(null);
-  const [mensagem, setMensagem] = useState("");
-  const [mostrarSugestoes, setMostrarSugestoes] = useState(false);
-
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (titulo.trim().length >= 3) {
-        buscarLivros();
-      } else {
-        setSugestoes([]);
-        setMostrarSugestoes(false);
-      }
-    }, 500);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [titulo]);
 
   const buscarLivros = async () => {
+    setSelecionado(null);
     const resposta = await buscarLivrosPorTitulo(titulo);
     if (resposta.sucesso) {
       setSugestoes(resposta.livros);
-      setMostrarSugestoes(true);
     } else {
       setSugestoes([]);
-      setMensagem(resposta.mensagem);
-      setMostrarSugestoes(false);
+      alert(resposta.mensagem)
     }
   };
 
@@ -41,25 +25,22 @@ function LivroBusca({ idUsuario }) {
     setSelecionado(livro);
     setSugestoes([]);
     setTitulo(livro.titulo);
-    setMensagem("");
-    setMostrarSugestoes(false);
   };
 
   const definirAtual = async () => {
     const resposta = await definirLivroAtual(idUsuario, selecionado.isbn);
-    setMensagem(resposta.mensagem);
+    alert(resposta.mensagem);
   };
 
   const marcarLido = async () => {
     const resposta = await marcarLivroComoLido(idUsuario, selecionado.isbn);
-    setMensagem(resposta.mensagem);
+    alert(resposta.mensagem);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-semibold mb-6 text-center text-[#3b3b3b]">
-          Buscar Livros
+    <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center text-[#525050]">
+          Adicionar leituras
         </h2>
 
         <div className="flex space-x-2 mb-2">
@@ -75,13 +56,13 @@ function LivroBusca({ idUsuario }) {
           />
           <button
             onClick={buscarLivros}
-            className="bg-[#a99484] text-white px-4 rounded-md hover:bg-[#8a7c72]"
+            className="bg-[#a99484] text-white px-4 rounded-md cursor-pointer hover:bg-[#8a7c72]"
           >
             Buscar
           </button>
         </div>
 
-        {mostrarSugestoes && sugestoes.length > 0 && !selecionado && (
+        {sugestoes.length > 0 && !selecionado && (
           <ul className="border border-gray-200 mt-1 rounded shadow-sm">
             {sugestoes.map((livro) => (
               <li
@@ -116,14 +97,7 @@ function LivroBusca({ idUsuario }) {
             </div>
           </div>
         )}
-
-        {mensagem && (
-          <p className="mt-4 text-center text-blue-600 font-medium text-sm">
-            {mensagem}
-          </p>
-        )}
       </div>
-    </div>
   );
 }
 

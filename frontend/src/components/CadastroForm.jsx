@@ -26,7 +26,7 @@ const CadastroForm = () => {
 
     return (
         <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
-            <h2 className="text-2xl font-bold text-center text-[#4B6043] mb-6">
+            <h2 className="text-2xl font-bold text-center text-[#525050] mb-6">
                 Cadastro de Leitor
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">

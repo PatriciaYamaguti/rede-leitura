@@ -24,7 +24,7 @@ export async function definirLivroAtual(idUsuario, isbn) {
 
         if (response.ok) {
             const data = await response.json();
-            return { sucesso: true, mensagem: `Livro atual definido: ${data.titulo}` };
+            return { sucesso: true, mensagem: `${data.titulo} foi marcado como leitura atual com sucesso!` };
         } else if (response.status === 400) {
             return { sucesso: false, mensagem: "Usuário ou ISBN inválido." };
         } else {
@@ -44,7 +44,7 @@ export async function marcarLivroComoLido(idUsuario, isbn) {
 
         if (response.ok) {
             const data = await response.json();
-            return { sucesso: true, mensagem: `Livro marcado como lido: ${data.titulo}` };
+            return { sucesso: true, mensagem: `${data.titulo} foi marcado como livro lido com sucesso!` };
         } else if (response.status === 400) {
             return { sucesso: false, mensagem: "Usuário não encontrado ou ISBN inválido." };
         } else {
