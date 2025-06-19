@@ -37,3 +37,22 @@ export async function aceitarSolicitacaoAmizade(idSolicitacao) {
         return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
     }
 }
+
+export async function recusarSolicitacaoAmizade(idSolicitacao) {
+    try {
+        const response = await fetch(`${BASE_URL}/recusar?idSolicitacao=${idSolicitacao}`, {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            return { sucesso: true, mensagem: "Solicitação ou amizade removida com sucesso!" };
+        } else if (response.status === 404) {
+            return { sucesso: false, mensagem: "Não há amizade nem solicitação pendente entre os usuários." };
+        } else {
+            return { sucesso: false, mensagem: "Erro ao recusar/remover a solicitação de amizade." };
+        }
+    } catch (error) {
+        console.error(error);
+        return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
+    }
+}
