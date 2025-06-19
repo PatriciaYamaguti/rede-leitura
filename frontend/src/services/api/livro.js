@@ -15,3 +15,23 @@ export async function buscarLivrosPorTitulo(titulo) {
         return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
     }
 }
+
+export async function definirLivroAtual(idUsuario, isbn) {
+    try {
+        const response = await fetch(`${BASE_URL}/${idUsuario}/atual/${isbn}`, {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return { sucesso: true, mensagem: `Livro atual definido: ${data.titulo}` };
+        } else if (response.status === 400) {
+            return { sucesso: false, mensagem: "Usuário ou ISBN inválido." };
+        } else {
+            return { sucesso: false, mensagem: "Erro ao definir o livro atual." };
+        }
+    } catch (error) {
+        console.error(error);
+        return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
+    }
+}
