@@ -54,3 +54,33 @@ export async function logarUsuario(dadosLogin) {
         return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
     }
 }
+
+export async function atualizarUsuario(id, dadosAtualizados) {
+    if (dadosAtualizados.nome.length > 80) {
+        return { sucesso: false, mensagem: "Nome com mais de 80 caracteres!" };
+    }
+    if (dadosAtualizados.usuario.length > 20) {
+        return { sucesso: false, mensagem: "Nome de usuário com mais de 20 caracteres!" };
+    }
+
+    try {
+        const response = await fetch(`${BASE_URL}/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dadosAtualizados)
+        });
+
+        if (response.ok) {
+            return { sucesso: true, mensagem: "Usuário atualizado com sucesso!" };
+        } else if (response.status === 404) {
+            return { sucesso: false, mensagem: "Usuário não encontrado!" };
+        } else if (response.status === 409) {
+            return { sucesso: false, mensagem: "Já existe outro usuário com esse nome de usuário!" };
+        } else {
+            return { sucesso: false, mensagem: "Erro ao atualizar usuário. Tente novamente mais tarde!" };
+        }
+    } catch (error) {
+        console.error(error);
+        return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
+    }
+}
