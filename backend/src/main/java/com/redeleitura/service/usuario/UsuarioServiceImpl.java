@@ -65,7 +65,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     private boolean validarUsuario(UsuarioDTO usuarioDTO) {
-        return usuarioDTO.getUsuario().length() <= 20 || usuarioDTO.getNome().length() <= 80;
+        return usuarioDTO.getUsuario().length() <= 20 || usuarioDTO.getNome().length() <= 80 || usuarioDTO.getDescricao().length() < 10 || usuarioDTO.getAcesso().getSenha().length() < 3;
     }
 
     @Override
@@ -117,6 +117,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         Usuario usuario = usuarioOptional.get();
+
+        if(!validarUsuario(usuarioMapper.toUsuarioDTO(usuario))) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Informações do usuário não correspondem as validações corretas.");
+        }
+
         usuario.setDataExpiracao(LocalDateTime.now());
         amizadeRepository.deleteByUsuarioId(usuario.getId());
 

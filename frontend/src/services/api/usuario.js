@@ -8,6 +8,14 @@ export async function cadastrarUsuario(dadosUsuario) {
         return { sucesso: false, mensagem: "Nome de usuário com mais de 20 caracteres!" };
     }
 
+    if(!dadosUsuario.descricao.length > 10) {
+        return { sucesso: false, mensagem: "Sua descrição deve ter no mínimo 10 caracteres."}
+    }
+
+    if (!dadosUsuario.senha.length > 3) {
+        return { sucesso: false, mensagem: "Senha menor que 3 caracteres!"}
+    }
+
     try {
         const response = await fetch(BASE_URL, {
             method: 'POST',
@@ -61,6 +69,14 @@ export async function atualizarUsuario(id, dadosAtualizados) {
     }
     if (dadosAtualizados.usuario.length > 20) {
         return { sucesso: false, mensagem: "Nome de usuário com mais de 20 caracteres!" };
+    }
+
+    if(!dadosAtualizados.descricao.length > 10) {
+        return { sucesso: false, mensagem: "Sua descrição deve ter no mínimo 10 caracteres."}
+    }
+
+    if (!dadosAtualizados.senha.length > 3) {
+        return { sucesso: false, mensagem: "Senha menor que 3 caracteres!"}
     }
 
     try {
