@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   buscarLivrosPorTitulo,
   definirLivroAtual,
@@ -10,13 +10,30 @@ function LivroBusca({ idUsuario }) {
   const [sugestoes, setSugestoes] = useState([]);
   const [selecionado, setSelecionado] = useState(null);
   const [mensagem, setMensagem] = useState("");
+  const [mostrarSugestoes, setMostrarSugestoes] = useState(false);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (titulo.trim().length >= 3) {
+        buscarLivros();
+      } else {
+        setSugestoes([]);
+        setMostrarSugestoes(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [titulo]);
 
   const buscarLivros = async () => {
     const resposta = await buscarLivrosPorTitulo(titulo);
     if (resposta.sucesso) {
       setSugestoes(resposta.livros);
+      setMostrarSugestoes(true);
     } else {
       setSugestoes([]);
+      setMensagem(resposta.mensagem);
+      setMostrarSugestoes(false);
     }
   };
 
@@ -25,6 +42,7 @@ function LivroBusca({ idUsuario }) {
     setSugestoes([]);
     setTitulo(livro.titulo);
     setMensagem("");
+    setMostrarSugestoes(false);
   };
 
   const definirAtual = async () => {
@@ -52,7 +70,6 @@ function LivroBusca({ idUsuario }) {
             onChange={(e) => {
               setTitulo(e.target.value);
               setSelecionado(null);
-              setMensagem("");
             }}
             className="flex-grow border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring focus:ring-[#a99484]"
           />
@@ -64,13 +81,13 @@ function LivroBusca({ idUsuario }) {
           </button>
         </div>
 
-        {sugestoes.length > 0 && !selecionado && (
+        {mostrarSugestoes && sugestoes.length > 0 && !selecionado && (
           <ul className="border border-gray-200 mt-1 rounded shadow-sm">
             {sugestoes.map((livro) => (
               <li
                 key={livro.isbn}
                 onClick={() => selecionarLivro(livro)}
-                className="px-3 py-2 text-sm text-gray-800 cursor-pointer hover:bg-gray-100 border-b last:border-none"
+                className="px-3 py-2 cursor-pointer hover:bg-gray-100 text-sm"
               >
                 <strong>{livro.titulo}</strong> — {livro.autor}
               </li>
@@ -80,7 +97,7 @@ function LivroBusca({ idUsuario }) {
 
         {selecionado && (
           <div className="mt-6 border p-4 rounded bg-gray-50 text-center">
-            <p className="mb-3 text-gray-800">
+            <p className="mb-3">
               <strong>{selecionado.titulo}</strong> — {selecionado.autor}
             </p>
             <div className="flex justify-center space-x-3">
