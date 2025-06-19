@@ -1,4 +1,7 @@
 export async function cadastrarUsuario(dadosUsuario) {
+    if(dadosUsuario.nome.length > 80) { return {sucesso: false, mensagem: "Nome com mais de 80 caracteres!"} }
+    if(dadosUsuario.usuario.length > 20) { return {sucesso: false, mensagem: "Nome de usuário com mais de 20 caracteres!"} }
+    
     try {
         const response = await fetch('http://localhost:8080/api/usuarios', {
             method: 'POST',
