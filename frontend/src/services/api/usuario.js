@@ -84,3 +84,22 @@ export async function atualizarUsuario(id, dadosAtualizados) {
         return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
     }
 }
+
+export async function deletarUsuario(id) {
+    try {
+        const response = await fetch(`${BASE_URL}/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            return { sucesso: true, mensagem: "Usuário deletado com sucesso!" };
+        } else if (response.status === 404) {
+            return { sucesso: false, mensagem: "Usuário não encontrado!" };
+        } else {
+            return { sucesso: false, mensagem: "Erro ao deletar usuário. Tente novamente mais tarde!" };
+        }
+    } catch (error) {
+        console.error(error);
+        return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
+    }
+}
