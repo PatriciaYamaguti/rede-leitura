@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface UsuarioService {
     ResponseEntity<?> cadastrarUsuario(UsuarioDTO usuarioDTO);
 
-    Optional<Usuario> buscarUsuarioPorId(Integer id);
+    ResponseEntity<?> buscarUsuarioPorId(Integer id);
 
     ResponseEntity<?> atualizarUsuario(Integer id, UsuarioDTO usuarioDTO);
 

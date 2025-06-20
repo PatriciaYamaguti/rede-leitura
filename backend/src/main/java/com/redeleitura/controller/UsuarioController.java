@@ -1,5 +1,6 @@
 package com.redeleitura.controller;
 
+import com.redeleitura.dto.UsuarioLivrosDTO;
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import com.redeleitura.dto.UsuarioDTO;
 import com.redeleitura.service.amizade.AmizadeService;
@@ -40,5 +41,10 @@ public class UsuarioController {
     @PostMapping("/logar")
     public ResponseEntity<?> logar(@RequestBody UsuarioDTO usuarioDTO) {
         return usuarioService.logarUsuario(usuarioDTO);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> buscarUsuarioPorId(@RequestParam Integer idUsuario) {
+        return usuarioService.buscarUsuarioPorId(idUsuario);
     }
 }
