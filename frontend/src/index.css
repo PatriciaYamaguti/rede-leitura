@@ -14,3 +14,16 @@
 .animate-slide-fade {
     animation: slide-fade 200ms ease-out forwards;
 }
+
+@keyframes pulseNotification {
+  0%, 100% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.35);
+  }
+}
+
+.pulse-notification {
+  animation: pulseNotification 1.5s infinite;
+}
