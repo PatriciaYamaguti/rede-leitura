@@ -11,17 +11,15 @@ public class UsuarioLivrosDTO {
     private String nome;
     private String usuario;
     private String descricao;
-    private AcessoDTO acesso;
     private LivroAtualDTO livroAtual;
     private LocalDateTime dataCadastro;
     private List<LivrosLidosDTO> livrosLidos;
 
     public UsuarioLivrosDTO() {}
 
-    public UsuarioLivrosDTO(String nome, String usuario, String descricao, AcessoDTO acesso, LocalDateTime dataCadastro, Integer id, List<LivrosLidosDTO> livrosLidos) {
+    public UsuarioLivrosDTO(String nome, String usuario, String descricao, LocalDateTime dataCadastro, Integer id, List<LivrosLidosDTO> livrosLidos) {
         this.nome = nome;
         this.usuario = usuario;
-        this.acesso = acesso;
         this.dataCadastro = dataCadastro;
         this.descricao = descricao;
         this.id = id;
@@ -44,14 +42,6 @@ public class UsuarioLivrosDTO {
 
     public void setUsuario(String usuario) {
         this.usuario = usuario;
-    }
-
-    public AcessoDTO getAcesso() {
-        return acesso;
-    }
-
-    public void setAcesso(AcessoDTO acesso) {
-        this.acesso = acesso;
     }
 
     public void setLivroAtual(LivroAtualDTO livroAtual) {
