@@ -48,6 +48,10 @@ public class UsuarioServiceImpl implements UsuarioService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Já existe um usuário com o mesmo nome de usuário.");
         }
 
+        if(!validarUsuario(usuarioDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Informações do usuário não correspondem as validações corretas.");
+        }
+
         String senhaHash = HashUtil.gerarHashSHA256(usuarioDTO.getAcesso().getSenha());
 
         Usuario usuario = usuarioMapper.toUsuarioEntity(usuarioDTO);
@@ -58,6 +62,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.save(usuario);
         acessoRepository.save(acesso);
         return ResponseEntity.ok("Cadastro realizado com sucesso.");
+    }
+
+    private boolean validarUsuario(UsuarioDTO usuarioDTO) {
+        return usuarioDTO.getUsuario().length() <= 20 || usuarioDTO.getNome().length() <= 80 || usuarioDTO.getDescricao().length() < 10 || usuarioDTO.getAcesso().getSenha().length() < 3;
     }
 
     @Override
@@ -109,6 +117,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         Usuario usuario = usuarioOptional.get();
+
+        if(!validarUsuario(usuarioMapper.toUsuarioDTO(usuario))) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Informações do usuário não correspondem as validações corretas.");
+        }
+
         usuario.setDataExpiracao(LocalDateTime.now());
         amizadeRepository.deleteByUsuarioId(usuario.getId());
 
@@ -125,9 +138,17 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         Usuario usuario = usuarioExistente.get();
-        Optional<Acesso> acessoOptional = acessoRepository.findByUsuarioIdAndSenha(usuario.getId(), HashUtil.gerarHashSHA256(usuarioDTO.getAcesso().getSenha()));
+        Optional<Acesso> acessoOptional = acessoRepository.findByUsuarioIdAndSenha(
+                usuario.getId(),
+                HashUtil.gerarHashSHA256(usuarioDTO.getAcesso().getSenha())
+        );
+
         if (acessoOptional.isPresent()) {
-            return ResponseEntity.ok("Usuário logado com sucesso.");
+            Map<String, Object> resposta = new HashMap<>();
+            resposta.put("mensagem", "Usuário logado com sucesso.");
+            resposta.put("idUsuario", usuario.getId());
+
+            return ResponseEntity.ok(resposta);
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Senha incorreta.");

@@ -14,4 +14,3 @@ public interface AmizadeLogRepository extends JpaRepository<AmizadeLog, Long> {
     List<AmizadeLog> findByAmizadeAndUsuarioIdAndAtivaTrueOrderByDataHoraDesc(Amizade amizade, Integer idUsuario);
 
 }
-
