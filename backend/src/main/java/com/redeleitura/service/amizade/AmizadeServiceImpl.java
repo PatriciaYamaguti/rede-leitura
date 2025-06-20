@@ -207,10 +207,10 @@ public class AmizadeServiceImpl implements AmizadeService {
 
             if (logAtivo.isPresent()) {
                 String status = logAtivo.get().getStatus().name();
-                return new StatusAmizadeDTO(true, status, amizade.getId());
+                return new StatusAmizadeDTO(true, status, amizade.getId(), amizade.getSolicitante().getId());
             }
         }
 
-        return new StatusAmizadeDTO(false, null, null);
+        return new StatusAmizadeDTO(false, null, null, null);
     }
 }

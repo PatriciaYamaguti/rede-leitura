@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import CardUsuario from "../components/CardUsuario";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import LivroBusca from "../components/LivroBusca"
 import { listarUsuariosPorInteresses } from "../services/api/usuario";
 
 const Descobrir = () => {
@@ -36,7 +37,7 @@ const Descobrir = () => {
             
             <main className="flex-grow p-10 py-20 bg-gradient-to-br">
                 <div className="mx-auto max-w-4xl">
-                    <h2 className="text-2xl font-medium text-center text-gray-800 mb-6">
+                    <h2 className="text-2xl font-medium mb-10 text-left text-gray-800">
                         Encontre novos amigos!
                     </h2>
                     
@@ -45,7 +46,7 @@ const Descobrir = () => {
                             <p className="text-gray-600">Carregando...</p>
                         </div>
                     ) : usuarios.length > 0 ? (
-                        <div className="grid gap-6">
+                        <div className="grid grid-cols-3 gap-6">
                             {usuarios.map((usuario) => (
                                 <CardUsuario 
                                     key={usuario.id} 
