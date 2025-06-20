@@ -7,6 +7,7 @@ import { AlertProvider } from "./providers/AlertProvider";
 import ValidacaoRoute from "./components/ValidacaoRoute";
 import Perfil from "./pages/Perfl";
 import Descobrir from "./pages/Descobrir";
+import UsuarioDetalhes from "./pages/UsuarioDetalhes";
 
 function App() {
   return (
@@ -38,6 +39,15 @@ function App() {
           element={
             <ValidacaoRoute>
               <Descobrir />
+            </ValidacaoRoute>
+          }
+        />
+
+        <Route
+          path="/usuario/:id"
+          element={
+            <ValidacaoRoute>
+              <UsuarioDetalhes />
             </ValidacaoRoute>
           }
         />

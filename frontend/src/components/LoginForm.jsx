@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { logarUsuario } from "../services/api/usuario";
 import { AlertContext } from "../contexts/AlertContext";
 
@@ -7,6 +7,7 @@ const LoginForm = () => {
     const [usuario, setUsuario] = useState('');
     const [senha, setSenha] = useState('');
     const { showAlert } = useContext(AlertContext);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -17,7 +18,7 @@ const LoginForm = () => {
 
         if(resultado.sucesso) {
             showAlert(resultado.mensagem, "sucesso");
-            // navigate to...
+            navigate("/descobrir")
         } else {
             showAlert(resultado.mensagem, "erro");
         }

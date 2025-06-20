@@ -7,10 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AmizadeLogRepository extends JpaRepository<AmizadeLog, Long> {
 
     List<AmizadeLog> findByAmizadeAndAtivaTrueOrderByDataHoraDesc(Amizade amizade);
     List<AmizadeLog> findByAmizadeAndUsuarioIdAndAtivaTrueOrderByDataHoraDesc(Amizade amizade, Integer idUsuario);
+    Optional<AmizadeLog> findFirstByAmizadeAndAtivaTrueOrderByDataHoraDesc(Amizade amizade);
 
 }

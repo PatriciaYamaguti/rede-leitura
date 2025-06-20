@@ -109,6 +109,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         List<LivrosLidos> livrosLidos = livrosLidosRepository.findByUsuario(usuario);
         if (!livrosLidos.isEmpty()) {
             usuariolivrosDTO.setLivrosLidos(livroMapper.toLivrosLidosDTO(livrosLidos));
+
+            usuariolivrosDTO.getLivrosLidos().forEach(livro -> livro.setUsuarioDTO(null));
         }
 
         return ResponseEntity.ok(usuariolivrosDTO);
@@ -121,7 +123,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
         }
 
-        if(!validarUsuario(usuarioDTO)) {
+        if(!(usuarioDTO.getUsuario().length() <= 20 && usuarioDTO.getNome().length() <= 80 && usuarioDTO.getDescricao().length() >= 10)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Informações do usuário não correspondem as validações corretas.");
         }
 

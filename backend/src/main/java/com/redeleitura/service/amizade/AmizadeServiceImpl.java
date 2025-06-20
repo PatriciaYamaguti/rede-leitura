@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import com.redeleitura.dto.AmizadeLogDTO;
+import com.redeleitura.dto.StatusAmizadeDTO;
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import com.redeleitura.entity.AmizadeLog;
 import com.redeleitura.mapper.AmizadeLogMapper;
@@ -188,5 +189,28 @@ public class AmizadeServiceImpl implements AmizadeService {
             log.setAtiva(false);
         }
         amizadeLogRepository.saveAll(logsAtivos);
+    }
+
+    public StatusAmizadeDTO buscarStatusAmizade(Integer idUsuario1, Integer idUsuario2) {
+        Usuario usuario1 = usuarioRepository.findById(idUsuario1)
+                .orElseThrow(() -> new RuntimeException("Usuário 1 não encontrado"));
+
+        Usuario usuario2 = usuarioRepository.findById(idUsuario2)
+                .orElseThrow(() -> new RuntimeException("Usuário 2 não encontrado"));
+
+        Optional<Amizade> amizadeOptional = amizadeRepository.findByUsuarios(usuario1, usuario2);
+
+        if (amizadeOptional.isPresent()) {
+            Amizade amizade = amizadeOptional.get();
+
+            Optional<AmizadeLog> logAtivo = amizadeLogRepository.findFirstByAmizadeAndAtivaTrueOrderByDataHoraDesc(amizade);
+
+            if (logAtivo.isPresent()) {
+                String status = logAtivo.get().getStatus().name();
+                return new StatusAmizadeDTO(true, status, amizade.getId());
+            }
+        }
+
+        return new StatusAmizadeDTO(false, null, null);
     }
 }

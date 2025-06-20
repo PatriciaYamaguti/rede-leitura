@@ -74,9 +74,6 @@ export async function atualizarUsuario(id, dadosAtualizados) {
     if (dadosAtualizados.descricao.length < 10) {
         return { sucesso: false, mensagem: "A descrição tem que ter mais de 10 caracteres!" };
     }
-    if (dadosAtualizados.acesso.senha.length < 3) {
-        return { sucesso: false, mensagem: "Senha precisa ter mais que 3 caracteres!" };
-    }
 
     try {
         const response = await fetch(`${BASE_URL}/${id}`, {

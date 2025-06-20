@@ -33,13 +33,7 @@ public interface AmizadeRepository extends JpaRepository<Amizade, Long> {
     @Query("SELECT a FROM Amizade a WHERE a.solicitante = :usuario OR a.solicitado = :usuario")
     List<Amizade> findAllByUsuario(@Param("usuario") Usuario usuario);
 
-    @Query("SELECT l FROM AmizadeLog l WHERE l.amizade = :amizade ORDER BY l.dataHora DESC")
-    List<AmizadeLog> findTopByAmizadeOrderByDataHoraDesc(@Param("amizade") Amizade amizade, Pageable pageable);
-
-    List<Amizade> findBySolicitadoAndStatus(Usuario solicitado, StatusAmizade status);
-
-    List<Amizade> findBySolicitanteAndStatus(Usuario solicitante, StatusAmizade status);
-
-    List<Amizade> findByStatusAndSolicitanteOrSolicitado(StatusAmizade status, Usuario u1, Usuario u2);
+    @Query("SELECT a FROM Amizade a WHERE (a.solicitante = :usuario1 AND a.solicitado = :usuario2) OR (a.solicitante = :usuario2 AND a.solicitado = :usuario1)")
+    Optional<Amizade> findByUsuarios(@Param("usuario1") Usuario usuario1, @Param("usuario2") Usuario usuario2);
 }
 
