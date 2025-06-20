@@ -1,9 +1,9 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { cadastrarUsuario } from "../services/api/usuario";
+import { atualizarUsuario, cadastrarUsuario } from "../services/api/usuario";
 import { AlertContext } from "../contexts/AlertContext";
 
-const CadastroForm = () => {
+const CadastroAttForm = ( { tipo} ) => {
     const [nome, setNome] = useState('');
     const [usuario, setUsuario] = useState('');
     const [descricao, setDescricao] = useState('');
@@ -16,20 +16,31 @@ const CadastroForm = () => {
 
         const novoUsuario = { nome, usuario, descricao, acesso: { tipoAcesso: "USER", senha } };
 
-        const resultado = await cadastrarUsuario(novoUsuario);
+        if(tipo == "Cadastro") {
+            const resultado = await cadastrarUsuario(novoUsuario);
 
-        if (resultado.sucesso) {
-            showAlert(resultado.mensagem, "sucesso");
-            navigate("/logar");
+            if (resultado.sucesso) {
+                showAlert(resultado.mensagem, "sucesso");
+                navigate("/logar");
+            } else {
+                showAlert(resultado.mensagem, "erro");
+            }
         } else {
-            showAlert(resultado.mensagem, "erro");
+            const idUsuario = sessionStorage.getItem("idUsuario");
+            const resultado = await atualizarUsuario(idUsuario, novoUsuario);
+
+            if (resultado.sucesso) {
+                showAlert(resultado.mensagem, "sucesso");
+            } else {
+                showAlert(resultado.mensagem, "erro");
+            }
         }
     };
 
     return (
         <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
             <h2 className="text-2xl font-bold text-center text-[#525050] mb-6">
-                Cadastro de Leitor
+                { tipo } do Leitor
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -88,13 +99,17 @@ const CadastroForm = () => {
                     type="submit"
                     className="w-full bg-[#978074] text-white py-2 rounded-lg hover:bg-[#806c62] transition duration-300 cursor-pointer"
                 >
-                    Cadastrar
+                    Enviar
                 </button>
 
-                <Link to="/logar" className="text-[#757575] underline">Já tem uma conta?</Link>
+                {tipo === "Cadastro" && (
+                    <Link to="/logar" className="text-[#757575] underline">
+                        Já tem uma conta?
+                    </Link>
+                )}
             </form>
         </div>
     )
 }
 
-export default CadastroForm;
+export default CadastroAttForm;

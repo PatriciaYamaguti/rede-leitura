@@ -1,4 +1,4 @@
-import CadastroForm from "../components/CadastroForm";
+import CadastroAttForm from "../components/CadastroAttForm";
 import Footer from "../components/Footer";
 
 const Cadastro = () => {
@@ -6,7 +6,7 @@ const Cadastro = () => {
         <div className="flex flex-col min-h-screen">
             
             <div className="flex-grow flex flex-col items-center justify-center bg-gradient-to-br bg-[#f0f0f0] p-6">
-                <CadastroForm />
+                <CadastroAttForm tipo="Cadastro" />
             </div>
 
             {/* Footer sempre no rodapé */}

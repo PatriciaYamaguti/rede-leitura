@@ -65,7 +65,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     private boolean validarUsuario(UsuarioDTO usuarioDTO) {
-        return usuarioDTO.getUsuario().length() <= 20 || usuarioDTO.getNome().length() <= 80;
+        return usuarioDTO.getUsuario().length() <= 20
+                && usuarioDTO.getNome().length() <= 80
+                && usuarioDTO.getAcesso().getSenha().length() >= 3
+                && usuarioDTO.getDescricao().length() >= 10;
     }
 
     @Override
@@ -92,6 +95,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
         if (usuarioOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
+        }
+
+        if(!validarUsuario(usuarioDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Informações do usuário não correspondem as validações corretas.");
         }
 
         Optional<Usuario> usuarioExistente = usuarioRepository.findByUsuario(usuarioDTO.getUsuario());

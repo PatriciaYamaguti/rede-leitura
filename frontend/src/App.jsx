@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import Livros from "./pages/Livros";
 import { AlertProvider } from "./providers/AlertProvider";
 import ValidacaoRoute from "./components/ValidacaoRoute";
+import Perfil from "./pages/Perfl";
+import Descobrir from "./pages/Descobrir";
 
 function App() {
   return (
@@ -19,6 +21,23 @@ function App() {
           element={
             <ValidacaoRoute>
               <Livros />
+            </ValidacaoRoute>
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <ValidacaoRoute>
+              <Perfil />
+            </ValidacaoRoute>
+          }
+        />
+
+        <Route
+          path="/descobrir"
+          element={
+            <ValidacaoRoute>
+              <Descobrir />
             </ValidacaoRoute>
           }
         />
