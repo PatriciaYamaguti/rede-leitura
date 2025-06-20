@@ -1,11 +1,12 @@
 import { useEffect, useState, useContext } from "react";
-import { enviarSolicitacaoAmizade, buscarStatusAmizade, recusarSolicitacaoAmizade } from "../services/api/amizade";
+import { enviarSolicitacaoAmizade, buscarStatusAmizade, recusarSolicitacaoAmizade, aceitarSolicitacaoAmizade } from "../services/api/amizade";
 import { AlertContext } from "../contexts/AlertContext";
 
 const PerfilUsuario = ({ usuario }) => {
     const { showAlert } = useContext(AlertContext);
     const idLogado = sessionStorage.getItem("idUsuario");
     const [isAmigo, setIsAmigo] = useState(false);
+    const [isSolicitante, setSolicitante] = useState(false);
     const [statusAmizade, setStatusAmizade] = useState(null);
     const [loadingAmizade, setLoadingAmizade] = useState(true);
 
@@ -18,6 +19,10 @@ const PerfilUsuario = ({ usuario }) => {
                     if (resultado.existeAmizade) {
                         setIsAmigo(true);
                         setStatusAmizade(resultado.status);
+                    
+                        if(resultado.idSolicitante == idLogado) {
+                            setSolicitante(true);
+                        }
                     } else {
                         setIsAmigo(false);
                         setStatusAmizade(null);
@@ -45,6 +50,7 @@ const PerfilUsuario = ({ usuario }) => {
                 showAlert(resultado.mensagem, "sucesso");
                 setIsAmigo(true);
                 setStatusAmizade("PENDENTE");
+                setSolicitante(idLogado);
             } else {
                 showAlert(resultado.mensagem, "erro");
             }
@@ -77,6 +83,30 @@ const PerfilUsuario = ({ usuario }) => {
         }
     };
 
+    const handleAceitarAmizade = async () => {
+        try {
+            const resultadoStatus = await buscarStatusAmizade(idLogado, usuario.id);
+
+            if (resultadoStatus.existeAmizade && resultadoStatus.idAmizade) {
+                const idAmizadeAtual = resultadoStatus.idAmizade;
+
+                const resultado = await aceitarSolicitacaoAmizade(idAmizadeAtual);
+
+                if (resultado.sucesso) {
+                    showAlert(resultado.mensagem, "sucesso");
+                    setIsAmigo(true);
+                    setStatusAmizade("ACEITA");
+                } else {
+                    showAlert(resultado.mensagem, "erro");
+                }
+            } else {
+                showAlert("ID da amizade não encontrado.", "erro");
+            }
+        } catch (error) {
+            console.error("Erro ao desfazer amizade:", error);
+        }
+    };
+
     const livrosLidos = usuario.livrosLidos ?? [];
 
     return (
@@ -90,16 +120,34 @@ const PerfilUsuario = ({ usuario }) => {
                 {!loadingAmizade && idLogado !== String(usuario.id) && (
                     <div className="flex space-x-2">
                         {isAmigo && statusAmizade === "PENDENTE" ? (
-                        <button
-                            onClick={handleDesfazerAmizade}
-                            className="px-4 py-2 text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all"
-                        >
-                            Cancelar solicitação
-                        </button>
+                            isSolicitante ? (
+                                <button
+                                    onClick={handleDesfazerAmizade}
+                                    className="px-4 py-2 text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all"
+                                >
+                                    Cancelar solicitação
+                                </button>
+                            ) : (
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={handleDesfazerAmizade}
+                                        className="px-4 py-2 text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all"
+                                    >
+                                        Recusar solicitação
+                                    </button>
+                                        <button
+                                        onClick={handleAceitarAmizade}
+                                        className="px-4 py-2 text-sm font-medium rounded-lg bg-white text-[#8a6d5b] hover:bg-white/90 transition-all flex items-center space-x-1"
+                                    >
+                                        Aceitar solicitação
+                                    </button>
+                                </div>
+                            )
+                            
                         ) : isAmigo && statusAmizade === "ACEITA" ? (
                         <button
                             onClick={handleDesfazerAmizade}
-                            className="px-4 py-2 text-sm font-medium rounded-lg bg-red-500/90 hover:bg-red-600 text-white transition-all"
+                            className="px-4 py-2 text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all"
                         >
                             Remover amigo
                         </button>
@@ -113,7 +161,8 @@ const PerfilUsuario = ({ usuario }) => {
                         </button>
                         )}
                     </div>
-                    )}
+                    
+                )}
             </div>
 
             <div className="p-6 space-y-6">

@@ -4,15 +4,16 @@ public class StatusAmizadeDTO {
     private boolean existeAmizade;
     private String status;
     private Integer idAmizade;
+    private Integer idSolicitante;
 
-    public StatusAmizadeDTO(boolean existeAmizade, String status, Integer idAmizade) {
+    public StatusAmizadeDTO(boolean existeAmizade, String status, Integer idAmizade, Integer idSolicitante) {
         this.existeAmizade = existeAmizade;
         this.status = status;
         this.idAmizade = idAmizade;
+        this.idSolicitante = idSolicitante;
     }
 
     // Getters e setters
-
     public boolean isExisteAmizade() {
         return existeAmizade;
     }
@@ -35,5 +36,13 @@ public class StatusAmizadeDTO {
 
     public void setIdAmizade(Integer idAmizade) {
         this.idAmizade = idAmizade;
+    }
+
+    public Integer getIdSolicitante() {
+        return idSolicitante;
+    }
+
+    public void setIdSolicitante(Integer idSolicitante) {
+        this.idSolicitante = idSolicitante;
     }
 }

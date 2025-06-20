@@ -86,7 +86,7 @@ function LivroBusca({ idUsuario }) {
               {titulo && (
                 <button
                   onClick={limparBusca}
-                  className="absolute right-12 top-3 text-gray-400 hover:text-gray-600"
+                  className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
                 >
                   <FiX size={18} />
                 </button>

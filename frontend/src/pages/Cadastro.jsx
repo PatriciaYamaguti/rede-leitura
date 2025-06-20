@@ -9,7 +9,6 @@ const Cadastro = () => {
                 <CadastroAttForm tipo="Cadastro" />
             </div>
 
-            {/* Footer sempre no rodapé */}
             <Footer />
         </div>
     );

@@ -25,7 +25,7 @@ const Header = () => {
     }, [menuAberto]);
 
     return (
-        <header className="w-full py-4 bg-gradient-to-r from-[#8a6d5b] to-[#a58b79] shadow-lg">
+        <header className="w-full py-8 bg-gradient-to-r from-[#8a6d5b] to-[#a58b79] shadow-lg">
             <nav className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
                 <div className="flex items-center space-x-2">
                     <Link 
