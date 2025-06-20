@@ -8,6 +8,14 @@ export async function cadastrarUsuario(dadosUsuario) {
         return { sucesso: false, mensagem: "Nome de usuário com mais de 20 caracteres!" };
     }
 
+    if (dadosUsuario.descricao.length < 10) {
+        return { sucesso: false, mensagem: "A descrição tem que ter mais de 10 caracteres!" };
+    }
+
+    if (dadosUsuario.acesso.senha.length < 3) {
+        return { sucesso: false, mensagem: "Senha precisa ter mais que 3 caracteres!" };
+    }
+
     try {
         const response = await fetch(BASE_URL, {
             method: 'POST',
@@ -40,7 +48,7 @@ export async function logarUsuario(dadosLogin) {
 
         if (response.ok) {
             const data = await response.json();
-            localStorage.setItem("id_usuario", data.idUsuario);
+            sessionStorage.setItem("idUsuario", data.idUsuario);
             return { sucesso: true, mensagem: "Login realizado com sucesso!" };
         } else if (response.status === 409) {
             return { sucesso: false, mensagem: "Nome de usuário não existente!" };
@@ -61,6 +69,13 @@ export async function atualizarUsuario(id, dadosAtualizados) {
     }
     if (dadosAtualizados.usuario.length > 20) {
         return { sucesso: false, mensagem: "Nome de usuário com mais de 20 caracteres!" };
+    }
+
+    if (dadosAtualizados.descricao.length < 10) {
+        return { sucesso: false, mensagem: "A descrição tem que ter mais de 10 caracteres!" };
+    }
+    if (dadosAtualizados.acesso.senha.length < 3) {
+        return { sucesso: false, mensagem: "Senha precisa ter mais que 3 caracteres!" };
     }
 
     try {
