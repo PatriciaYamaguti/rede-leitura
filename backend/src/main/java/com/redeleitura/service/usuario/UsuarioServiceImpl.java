@@ -1,13 +1,18 @@
 package com.redeleitura.service.usuario;
 
+import com.redeleitura.dto.UsuarioLivrosDTO;
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import com.redeleitura.dto.UsuarioDTO;
 import com.redeleitura.entity.Acesso;
+import com.redeleitura.entity.LivrosLidos;
 import com.redeleitura.entity.Usuario;
+import com.redeleitura.mapper.LivroMapper;
 import com.redeleitura.mapper.UsuarioLivrosEmComumMapper;
+import com.redeleitura.mapper.UsuarioLivrosMapper;
 import com.redeleitura.mapper.UsuarioMapper;
 import com.redeleitura.repository.AcessoRepository;
 import com.redeleitura.repository.AmizadeRepository;
+import com.redeleitura.repository.LivrosLidosRepository;
 import com.redeleitura.repository.UsuarioRepository;
 import com.redeleitura.service.livro.LivrosEmComumService;
 import com.redeleitura.util.HashUtil;
@@ -39,6 +44,13 @@ public class UsuarioServiceImpl implements UsuarioService {
     private UsuarioLivrosEmComumMapper usuarioLivrosEmComumMapper;
     @Autowired
     private AmizadeRepository amizadeRepository;
+    @Autowired
+    private LivrosLidosRepository livrosLidosRepository;
+
+    @Autowired
+    private UsuarioLivrosMapper usuarioLivrosMapper;
+    @Autowired
+    private LivroMapper livroMapper;
 
     @Override
     public ResponseEntity<?> cadastrarUsuario(UsuarioDTO usuarioDTO) {
@@ -86,8 +98,22 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Optional<Usuario> buscarUsuarioPorId(Integer id) {
-        return Optional.empty();
+    public ResponseEntity<?> buscarUsuarioPorId(Integer id) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+        if (usuarioOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado com o ID: " + id);
+        }
+        Usuario usuario = usuarioOptional.get();
+        UsuarioLivrosDTO usuariolivrosDTO = usuarioLivrosMapper.toUsuarioLivrosDTO(usuario);
+
+        List<LivrosLidos> livrosLidos = livrosLidosRepository.findByUsuario(usuario);
+        if (!livrosLidos.isEmpty()) {
+            usuariolivrosDTO.setLivrosLidos(livroMapper.toLivrosLidosDTO(livrosLidos));
+
+            usuariolivrosDTO.getLivrosLidos().forEach(livro -> livro.setUsuarioDTO(null));
+        }
+
+        return ResponseEntity.ok(usuariolivrosDTO);
     }
 
     @Override
@@ -97,7 +123,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
         }
 
-        if(!validarUsuario(usuarioDTO)) {
+        if(!(usuarioDTO.getUsuario().length() <= 20 && usuarioDTO.getNome().length() <= 80 && usuarioDTO.getDescricao().length() >= 10)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Informações do usuário não correspondem as validações corretas.");
         }
 

@@ -6,6 +6,9 @@ import com.redeleitura.entity.LivroAtual;
 import com.redeleitura.entity.LivrosLidos;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class LivroMapper {
 
@@ -36,6 +39,24 @@ public class LivroMapper {
         dto.setDataLeitura(livrosLidos.getDataLeitura());
         dto.setUsuarioDTO(usuarioMapper.toUsuarioDTO(livrosLidos.getUsuario()));
         return dto;
+    }
+
+    public List<LivrosLidosDTO> toLivrosLidosDTO(List<LivrosLidos> livrosLidos) {
+        if (livrosLidos == null) return null;
+
+        List<LivrosLidosDTO> dtos = new ArrayList<>();
+
+        livrosLidos.forEach(livro -> {
+            LivrosLidosDTO dto = new LivrosLidosDTO();
+            dto.setIsbn(livro.getIsbn());
+            dto.setTitulo(livro.getTitulo());
+            dto.setAutor(livro.getAutor());
+            dto.setDataLeitura(livro.getDataLeitura());
+            dto.setUsuarioDTO(usuarioMapper.toUsuarioDTO(livro.getUsuario()));
+            dtos.add(dto);
+        });
+
+        return dtos;
     }
 
     public LivroAtual toLivroAtualEntity(LivroAtualDTO dto) {

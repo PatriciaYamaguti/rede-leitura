@@ -74,9 +74,6 @@ export async function atualizarUsuario(id, dadosAtualizados) {
     if (dadosAtualizados.descricao.length < 10) {
         return { sucesso: false, mensagem: "A descrição tem que ter mais de 10 caracteres!" };
     }
-    if (dadosAtualizados.acesso.senha.length < 3) {
-        return { sucesso: false, mensagem: "Senha precisa ter mais que 3 caracteres!" };
-    }
 
     try {
         const response = await fetch(`${BASE_URL}/${id}`, {
@@ -132,5 +129,21 @@ export async function listarUsuariosPorInteresses(idUsuario) {
     } catch (error) {
         console.error(error);
         return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
+    }
+}
+
+export async function buscarUsuarioPorId( idUsuario ) {
+    try {
+        const response = await fetch(`${BASE_URL}?idUsuario=${idUsuario}`)
+
+        if (response.ok) {
+            const usuario = await response.json();
+            return { sucesso: true, usuario:  usuario}
+        } else {
+            return { sucesso: false, mensagem: "Erro ao buscar informações do usuário." }
+        }
+    } catch (error) {
+        console.error(error);
+        return { sucesso: false, mensagem: "Falha de conexão com o servidor!"}
     }
 }

@@ -1,16 +1,42 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { atualizarUsuario, cadastrarUsuario } from "../services/api/usuario";
+import { atualizarUsuario, buscarUsuarioPorId, cadastrarUsuario } from "../services/api/usuario";
 import { AlertContext } from "../contexts/AlertContext";
 
-const CadastroAttForm = ( { tipo} ) => {
+const CadastroAttForm = ( { tipo } ) => {
     const [nome, setNome] = useState('');
     const [usuario, setUsuario] = useState('');
     const [descricao, setDescricao] = useState('');
     const [senha, setSenha] = useState('');
     const { showAlert } = useContext(AlertContext);
+    const idUsuario = sessionStorage.getItem("idUsuario");
     const navigate = useNavigate();
 
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (tipo === "Atualização") {
+            const preencherDados = async () => {
+                setLoading(true);
+                const resultado = await buscarUsuarioPorId(idUsuario);
+                setLoading(false);
+
+                if (resultado.sucesso) {
+                    setNome(resultado.usuario.nome);
+                    setUsuario(resultado.usuario.usuario);
+                    setDescricao(resultado.usuario.descricao);
+                } else {
+                    showAlert(resultado.mensagem, "erro");
+                }
+            };
+
+            preencherDados();
+        }
+    }, [tipo, idUsuario, showAlert]);
+
+if (loading) return <p>Carregando dados...</p>;
+
+ 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -82,18 +108,20 @@ const CadastroAttForm = ( { tipo} ) => {
                     ></textarea>
                 </div>
 
-                <div>
-                    <label className="block text-gray-700 font-medium mb-1">
-                        Senha
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Digite sua senha aqui"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#978074]"
-                        value={senha}
-                        onChange={(e) => setSenha(e.target.value)}
-                    />
-                </div>
+                {tipo === "Cadastro" && (
+                    <div>
+                        <label className="block text-gray-700 font-medium mb-1">
+                            Senha
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="Digite sua senha aqui"
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#978074]"
+                            value={senha}
+                            onChange={(e) => setSenha(e.target.value)}
+                        />
+                    </div>
+                )}
 
                 <button
                     type="submit"

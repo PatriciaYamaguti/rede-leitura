@@ -90,3 +90,20 @@ export async function listarAmizadeLog(idUsuario) {
         return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
     }
 }
+
+export async function buscarStatusAmizade(idUsuario1, idUsuario2) {
+    try {
+        const response = await fetch(`${BASE_URL}/status?idUsuario1=${idUsuario1}&idUsuario2=${idUsuario2}`);
+
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        } else {
+            console.error("Erro ao buscar status da amizade. Status HTTP:", response.status);
+            return { existeAmizade: false, status: null };
+        }
+    } catch (error) {
+        console.error("Erro ao buscar status da amizade:", error);
+        return { existeAmizade: false, status: null };
+    }
+}
