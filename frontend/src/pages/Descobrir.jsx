@@ -16,7 +16,6 @@ const Descobrir = () => {
 
       if (!idUsuario) return;
 
-      // Executa as duas chamadas em paralelo
       const [resUsuarios, resAmigos] = await Promise.all([
         listarUsuariosPorInteresses(idUsuario),
         listarAmigos(idUsuario),
