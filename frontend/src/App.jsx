@@ -10,12 +10,13 @@ import Descobrir from "./pages/Descobrir";
 import UsuarioDetalhes from "./pages/UsuarioDetalhes";
 import Amigos from "./pages/Amigos";
 import Logout from "./pages/Logout";
+import Home from "./pages/Home";
 
 function App() {
   return (
     <AlertProvider>
       <Routes>
-        <Route path="/" element={<></>} />
+        <Route path="/" element={<Home />} />
         <Route path="/cadastrar" element={<Cadastro />} />
         <Route path="/logar" element={<Login />} />
 
