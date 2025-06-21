@@ -8,6 +8,8 @@ import ValidacaoRoute from "./components/ValidacaoRoute";
 import Perfil from "./pages/Perfl";
 import Descobrir from "./pages/Descobrir";
 import UsuarioDetalhes from "./pages/UsuarioDetalhes";
+import Amigos from "./pages/Amigos";
+import Logout from "./pages/Logout";
 
 function App() {
   return (
@@ -42,7 +44,14 @@ function App() {
             </ValidacaoRoute>
           }
         />
-
+        <Route
+          path="/amigos"
+          element={
+            <ValidacaoRoute>
+              <Amigos />
+            </ValidacaoRoute>
+          }
+        />
         <Route
           path="/usuario/:id"
           element={
@@ -51,6 +60,7 @@ function App() {
             </ValidacaoRoute>
           }
         />
+        <Route path="/logout" element={<Logout />} />
       </Routes>
     </AlertProvider>
   );
