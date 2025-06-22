@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8080/api/livros';
+const BASE_URL = 'http://localhost:8000/api/livros';
 
 export async function buscarLivrosPorTitulo(titulo) {
     try {

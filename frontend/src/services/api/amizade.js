@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8080/api/amizade';
+const BASE_URL = 'http://localhost:8000/api/amizade';
 
 export async function enviarSolicitacaoAmizade(idSolicitante, idSolicitado) {
     try {

@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8080/api/usuarios';
+const BASE_URL = 'http://localhost:8000/api/usuarios';
 
 export async function cadastrarUsuario(dadosUsuario) {
     if (dadosUsuario.nome.length > 80) {
@@ -132,18 +132,18 @@ export async function listarUsuariosPorInteresses(idUsuario) {
     }
 }
 
-export async function buscarUsuarioPorId( idUsuario ) {
+export async function buscarUsuarioPorId(idUsuario) {
     try {
         const response = await fetch(`${BASE_URL}?idUsuario=${idUsuario}`)
 
         if (response.ok) {
             const usuario = await response.json();
-            return { sucesso: true, usuario:  usuario}
+            return { sucesso: true, usuario: usuario }
         } else {
             return { sucesso: false, mensagem: "Erro ao buscar informações do usuário." }
         }
     } catch (error) {
         console.error(error);
-        return { sucesso: false, mensagem: "Falha de conexão com o servidor!"}
+        return { sucesso: false, mensagem: "Falha de conexão com o servidor!" }
     }
 }
