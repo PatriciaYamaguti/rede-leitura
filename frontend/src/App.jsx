@@ -16,9 +16,17 @@ function App() {
   return (
     <AlertProvider>
       <Routes>
-        <Route path="/" element={<Home />} />
         <Route path="/cadastrar" element={<Cadastro />} />
         <Route path="/logar" element={<Login />} />
+        
+        <Route
+          path="/"
+          element={
+            <ValidacaoRoute>
+              <Home />
+            </ValidacaoRoute>
+          }
+        />
 
         <Route
           path="/livros"
