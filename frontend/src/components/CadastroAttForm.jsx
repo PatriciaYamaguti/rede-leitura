@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { atualizarUsuario, buscarUsuarioPorId, cadastrarUsuario } from "../services/api/usuario";
+import { atualizarUsuario, buscarUsuarioPorId, cadastrarUsuario, deletarUsuario } from "../services/api/usuario";
 import { AlertContext } from "../contexts/AlertContext";
 
-const CadastroAttForm = ( { tipo } ) => {
+const CadastroAttForm = ({ tipo }) => {
     const [nome, setNome] = useState('');
     const [usuario, setUsuario] = useState('');
     const [descricao, setDescricao] = useState('');
@@ -34,15 +34,15 @@ const CadastroAttForm = ( { tipo } ) => {
         }
     }, [tipo, idUsuario, showAlert]);
 
-if (loading) return <p>Carregando dados...</p>;
+    if (loading) return <p>Carregando dados...</p>;
 
- 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const novoUsuario = { nome, usuario, descricao, acesso: { tipoAcesso: "USER", senha } };
 
-        if(tipo == "Cadastro") {
+        if (tipo == "Cadastro") {
             const resultado = await cadastrarUsuario(novoUsuario);
 
             if (resultado.sucesso) {
@@ -63,10 +63,22 @@ if (loading) return <p>Carregando dados...</p>;
         }
     };
 
+    const handleExcluirConta = async () => {
+        const resultado = await deletarUsuario(idUsuario);
+
+        if (resultado.sucesso) {
+            showAlert(resultado.mensagem, "sucesso");
+            navigate("/logout");
+        } else {
+            showAlert(resultado.mensagem, "erro");
+        }
+    };
+
+
     return (
         <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
             <h2 className="text-2xl font-bold text-center text-[#525050] mb-6">
-                { tipo } do Leitor
+                {tipo} do Leitor
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -134,6 +146,16 @@ if (loading) return <p>Carregando dados...</p>;
                     <Link to="/logar" className="text-[#757575] underline">
                         Já tem uma conta?
                     </Link>
+                )}
+
+                {tipo === "Atualização" && (
+                    <button
+                        type="button"
+                        onClick={handleExcluirConta}
+                        className="w-full bg-none text-gray-500 p-0 underline text-right mt-2 cursor-pointer"
+                    >
+                        Excluir Conta
+                    </button>
                 )}
             </form>
         </div>

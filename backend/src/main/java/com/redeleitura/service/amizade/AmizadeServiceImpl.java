@@ -52,10 +52,10 @@ public class AmizadeServiceImpl implements AmizadeService {
 
     @Override
     public ResponseEntity<?> enviarSolicitacao(Integer idSolicitante, Integer idSolicitado) {
-        Usuario solicitante = usuarioRepository.findById(idSolicitante)
+        Usuario solicitante = usuarioRepository.findByIdAndDataExpiracaoIsNull(idSolicitante)
             .orElseThrow(() -> new RuntimeException("Solicitante não encontrado"));
 
-        Usuario solicitado = usuarioRepository.findById(idSolicitado)
+        Usuario solicitado = usuarioRepository.findByIdAndDataExpiracaoIsNull(idSolicitado)
             .orElseThrow(() -> new RuntimeException("Solicitado não encontrado"));
 
         Optional<Amizade> existente = amizadeRepository.findRelacionamentoEntreUsuarios(
@@ -129,7 +129,7 @@ public class AmizadeServiceImpl implements AmizadeService {
 
     @Override
     public List<UsuarioLivrosEmComumDTO> listarAmigos(Integer idUsuario) {
-        Usuario usuario = usuarioRepository.findById(idUsuario)
+        Usuario usuario = usuarioRepository.findByIdAndDataExpiracaoIsNull(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         List<Amizade> amizades = amizadeRepository.findByStatusAndUsuario(StatusAmizade.ACEITA, usuario);
@@ -145,10 +145,10 @@ public class AmizadeServiceImpl implements AmizadeService {
 
     @Override
     public ResponseEntity<?> buscarStatusAmizade(Integer idUsuario1, Integer idUsuario2) {
-        Usuario usuario1 = usuarioRepository.findById(idUsuario1)
+        Usuario usuario1 = usuarioRepository.findByIdAndDataExpiracaoIsNull(idUsuario1)
                 .orElseThrow(() -> new RuntimeException("Usuário 1 não encontrado"));
 
-        Usuario usuario2 = usuarioRepository.findById(idUsuario2)
+        Usuario usuario2 = usuarioRepository.findByIdAndDataExpiracaoIsNull(idUsuario2)
                 .orElseThrow(() -> new RuntimeException("Usuário 2 não encontrado"));
 
         Optional<Amizade> amizadeOptional = amizadeRepository.findByUsuarios(usuario1, usuario2);
@@ -168,7 +168,7 @@ public class AmizadeServiceImpl implements AmizadeService {
 
     @Override
     public List<AmizadeLogDTO> listarAmizadeLog(Integer idUsuario) {
-        Usuario usuario = usuarioRepository.findById(idUsuario)
+        Usuario usuario = usuarioRepository.findByIdAndDataExpiracaoIsNull(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         // Buscar todas as amizades onde o usuário está envolvido

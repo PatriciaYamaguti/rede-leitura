@@ -29,5 +29,7 @@ public class Amizade {
     @Column(name = "data_solicitacao")
     private LocalDateTime dataSolicitacao = LocalDateTime.now();
 
+    @Column(name = "excluida", nullable = false)
+    private boolean excluida = false;
 }
 

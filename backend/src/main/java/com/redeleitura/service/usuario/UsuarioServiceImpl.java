@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.redeleitura.entity.*;
+import com.redeleitura.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,17 +16,10 @@ import org.springframework.stereotype.Service;
 import com.redeleitura.dto.UsuarioDTO;
 import com.redeleitura.dto.UsuarioLivrosDTO;
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
-import com.redeleitura.entity.Acesso;
-import com.redeleitura.entity.LivrosLidos;
-import com.redeleitura.entity.Usuario;
 import com.redeleitura.mapper.LivroMapper;
 import com.redeleitura.mapper.UsuarioLivrosEmComumMapper;
 import com.redeleitura.mapper.UsuarioLivrosMapper;
 import com.redeleitura.mapper.UsuarioMapper;
-import com.redeleitura.repository.AcessoRepository;
-import com.redeleitura.repository.AmizadeRepository;
-import com.redeleitura.repository.LivrosLidosRepository;
-import com.redeleitura.repository.UsuarioRepository;
 import com.redeleitura.service.livro.LivrosEmComumService;
 import com.redeleitura.util.HashUtil;
 
@@ -55,6 +50,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     private UsuarioLivrosMapper usuarioLivrosMapper;
     @Autowired
     private LivroMapper livroMapper;
+    @Autowired
+    private AmizadeLogRepository amizadeLogRepository;
 
     @Override
     public ResponseEntity<?> cadastrarUsuario(UsuarioDTO usuarioDTO) {
@@ -89,10 +86,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public List<UsuarioLivrosEmComumDTO> listarUsuariosPorInteresses(Integer idUsuario) {
-        Usuario usuarioAtual = usuarioRepository.findById(idUsuario)
+        Usuario usuarioAtual = usuarioRepository.findByIdAndDataExpiracaoIsNull(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        List<Usuario> outrosUsuarios = usuarioRepository.findAll().stream()
+        List<Usuario> outrosUsuarios = usuarioRepository.findAllByDataExpiracaoIsNull().stream()
                 .filter(u -> !u.getId().equals(usuarioAtual.getId()))
                 .toList();
 
@@ -103,7 +100,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public ResponseEntity<?> buscarUsuarioPorId(Integer id) {
-        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByIdAndDataExpiracaoIsNull(id);
         if (usuarioOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado com o ID: " + id);
         }
@@ -122,7 +119,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public ResponseEntity<?> atualizarUsuario(Integer id, UsuarioDTO usuarioDTO) {
-        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByIdAndDataExpiracaoIsNull(id);
         if (usuarioOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
         }
@@ -148,14 +145,25 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public ResponseEntity<?> deletarUsuario(Integer id) {
-        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByIdAndDataExpiracaoIsNull(id);
         if (usuarioOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
         }
 
         Usuario usuario = usuarioOptional.get();
         usuario.setDataExpiracao(LocalDateTime.now());
-        amizadeRepository.deleteByUsuarioId(usuario.getId());
+
+        List<Amizade> amizades = amizadeRepository.findAllByUsuario(usuario);
+        for (Amizade amizade : amizades) {
+            amizade.setExcluida(true);
+            amizadeRepository.save(amizade);
+        }
+
+        List<AmizadeLog> logs = amizadeLogRepository.findByUsuarioAndAtivaTrue(usuario);
+        for (AmizadeLog log : logs) {
+            log.setAtiva(false);
+        }
+        amizadeLogRepository.saveAll(logs);
 
         usuarioRepository.save(usuario);
 
@@ -164,7 +172,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public ResponseEntity<?> logarUsuario(UsuarioDTO usuarioDTO) {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findByUsuario(usuarioDTO.getUsuario());
+        Optional<Usuario> usuarioExistente = usuarioRepository.findByUsuarioAndDataExpiracaoIsNull(usuarioDTO.getUsuario());
         if (usuarioExistente.isEmpty()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Nome de usuário não existente.");
         }
