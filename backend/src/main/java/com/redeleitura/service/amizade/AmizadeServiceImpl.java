@@ -209,7 +209,7 @@ public class AmizadeServiceImpl implements AmizadeService {
         Amizade amizade = amizadeOptional.get();
         limparLogAmizade(amizade);
 
-        return ResponseEntity.ok("Marcado como lido com sucesso!");
+        return ResponseEntity.ok().build();
     }
 
     @Transactional
