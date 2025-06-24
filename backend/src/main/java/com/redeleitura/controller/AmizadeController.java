@@ -4,6 +4,7 @@ import com.redeleitura.dto.AmizadeLogDTO;
 import com.redeleitura.dto.StatusAmizadeDTO;
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,21 +37,34 @@ public class AmizadeController {
     }
 
     @PostMapping("/listar")
-    public List<UsuarioLivrosEmComumDTO> listarAmizades(@RequestParam Integer idUsuario) {
-        return amizadeService.listarAmigos(idUsuario);
+    public ResponseEntity<?> listarAmizades(@RequestParam Integer idUsuario) {
+        try {
+            List<UsuarioLivrosEmComumDTO> amigos = amizadeService.listarAmigos(idUsuario);
+            return ResponseEntity.ok(amigos);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao listar amigos.");
+        }
     }
 
-    @GetMapping()
-    public List<AmizadeLogDTO> listarAmizadeLog(Integer idUsuario) {
-        return amizadeService.listarAmizadeLog(idUsuario);
+    @GetMapping
+    public ResponseEntity<?> listarAmizadeLog(@RequestParam Integer idUsuario) {
+        try {
+            List<AmizadeLogDTO> logs = amizadeService.listarAmizadeLog(idUsuario);
+            return ResponseEntity.ok(logs);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao listar logs de amizade.");
+        }
     }
 
     @GetMapping("/status")
-    public ResponseEntity<StatusAmizadeDTO> buscarStatusAmizade(
+    public ResponseEntity<?> buscarStatusAmizade(
             @RequestParam Integer idUsuario1,
             @RequestParam Integer idUsuario2) {
-        StatusAmizadeDTO status = amizadeService.buscarStatusAmizade(idUsuario1, idUsuario2);
-        return ResponseEntity.ok(status);
+        return amizadeService.buscarStatusAmizade(idUsuario1, idUsuario2);
     }
 }
 

@@ -140,6 +140,29 @@ public class AmizadeServiceImpl implements AmizadeService {
     }
 
     @Override
+    public ResponseEntity<?> buscarStatusAmizade(Integer idUsuario1, Integer idUsuario2) {
+        Usuario usuario1 = usuarioRepository.findById(idUsuario1)
+                .orElseThrow(() -> new RuntimeException("Usuário 1 não encontrado"));
+
+        Usuario usuario2 = usuarioRepository.findById(idUsuario2)
+                .orElseThrow(() -> new RuntimeException("Usuário 2 não encontrado"));
+
+        Optional<Amizade> amizadeOptional = amizadeRepository.findByUsuarios(usuario1, usuario2);
+
+        if (amizadeOptional.isPresent()) {
+            Amizade amizade = amizadeOptional.get();
+            String status = amizade.getStatus().name();
+            Integer idSolicitante = amizade.getSolicitante().getId();
+
+            StatusAmizadeDTO statusDTO = new StatusAmizadeDTO(true, status, amizade.getId(), idSolicitante);
+            return ResponseEntity.ok(statusDTO);
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Não há amizade nem solicitação pendente entre os usuários.");
+    }
+
+    @Override
     public List<AmizadeLogDTO> listarAmizadeLog(Integer idUsuario) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -189,28 +212,5 @@ public class AmizadeServiceImpl implements AmizadeService {
             log.setAtiva(false);
         }
         amizadeLogRepository.saveAll(logsAtivos);
-    }
-
-    public StatusAmizadeDTO buscarStatusAmizade(Integer idUsuario1, Integer idUsuario2) {
-        Usuario usuario1 = usuarioRepository.findById(idUsuario1)
-                .orElseThrow(() -> new RuntimeException("Usuário 1 não encontrado"));
-
-        Usuario usuario2 = usuarioRepository.findById(idUsuario2)
-                .orElseThrow(() -> new RuntimeException("Usuário 2 não encontrado"));
-
-        Optional<Amizade> amizadeOptional = amizadeRepository.findByUsuarios(usuario1, usuario2);
-
-        if (amizadeOptional.isPresent()) {
-            Amizade amizade = amizadeOptional.get();
-
-            Optional<AmizadeLog> logAtivo = amizadeLogRepository.findFirstByAmizadeAndAtivaTrueOrderByDataHoraDesc(amizade);
-
-            if (logAtivo.isPresent()) {
-                String status = logAtivo.get().getStatus().name();
-                return new StatusAmizadeDTO(true, status, amizade.getId(), amizade.getSolicitante().getId());
-            }
-        }
-
-        return new StatusAmizadeDTO(false, null, null, null);
     }
 }
