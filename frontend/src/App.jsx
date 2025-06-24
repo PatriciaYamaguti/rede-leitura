@@ -18,7 +18,7 @@ function App() {
       <Routes>
         <Route path="/cadastrar" element={<Cadastro />} />
         <Route path="/logar" element={<Login />} />
-        
+
         <Route
           path="/"
           element={
