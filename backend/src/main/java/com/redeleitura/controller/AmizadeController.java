@@ -1,7 +1,6 @@
 package com.redeleitura.controller;
 
 import com.redeleitura.dto.AmizadeLogDTO;
-import com.redeleitura.dto.StatusAmizadeDTO;
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -66,7 +65,9 @@ public class AmizadeController {
             @RequestParam Integer idUsuario2) {
         return amizadeService.buscarStatusAmizade(idUsuario1, idUsuario2);
     }
+
+    @DeleteMapping("/marcarLido")
+    public ResponseEntity<?> marcarComoLido(@RequestParam Integer idUsuario1, @RequestParam Integer idUsuario2) {
+        return ResponseEntity.ok(amizadeService.marcarComoLido(idUsuario1, idUsuario2));
+    }
 }
-
-
-

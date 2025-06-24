@@ -1,6 +1,5 @@
 package com.redeleitura.dto;
 
-import com.redeleitura.entity.Usuario;
 import lombok.Getter;
 import lombok.Setter;
 

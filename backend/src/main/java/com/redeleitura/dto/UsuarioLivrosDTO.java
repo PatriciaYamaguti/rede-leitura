@@ -1,7 +1,5 @@
 package com.redeleitura.dto;
 
-import com.redeleitura.entity.Usuario;
-
 import java.time.LocalDateTime;
 import java.util.List;
 

@@ -1,7 +1,5 @@
 package com.redeleitura.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class AcessoDTO {
     private String tipoAcesso;
     private String senha;

@@ -1,17 +1,16 @@
 package com.redeleitura.repository;
 
-import com.redeleitura.entity.Amizade;
-import com.redeleitura.entity.AmizadeLog;
-import com.redeleitura.entity.Usuario;
-import com.redeleitura.enums.StatusAmizade;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.awt.print.Pageable;
-import java.util.List;
-import java.util.Optional;
+import com.redeleitura.entity.Amizade;
+import com.redeleitura.entity.Usuario;
+import com.redeleitura.enums.StatusAmizade;
 
 public interface AmizadeRepository extends JpaRepository<Amizade, Long> {
 

@@ -1,8 +1,19 @@
 package com.redeleitura.service.usuario;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.redeleitura.dto.UsuarioDTO;
 import com.redeleitura.dto.UsuarioLivrosDTO;
 import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
-import com.redeleitura.dto.UsuarioDTO;
 import com.redeleitura.entity.Acesso;
 import com.redeleitura.entity.LivrosLidos;
 import com.redeleitura.entity.Usuario;
@@ -16,15 +27,8 @@ import com.redeleitura.repository.LivrosLidosRepository;
 import com.redeleitura.repository.UsuarioRepository;
 import com.redeleitura.service.livro.LivrosEmComumService;
 import com.redeleitura.util.HashUtil;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
+import jakarta.transaction.Transactional;
 
 @Service
 @Transactional

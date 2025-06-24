@@ -1,12 +1,11 @@
 package com.redeleitura.service.usuario;
 
-import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
-import com.redeleitura.dto.UsuarioDTO;
-import com.redeleitura.entity.Usuario;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
-import java.util.Optional;
+import com.redeleitura.dto.UsuarioDTO;
+import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 
 public interface UsuarioService {
     ResponseEntity<?> cadastrarUsuario(UsuarioDTO usuarioDTO);
