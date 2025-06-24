@@ -63,11 +63,12 @@ export async function listarAmigos(idUsuario) {
             method: 'POST'
         });
 
+        const data = await response.json();
+
         if (response.ok) {
-            const amigos = await response.json();
-            return { sucesso: true, amigos: amigos };
+            return { sucesso: true, amigos: data };
         } else {
-            return { sucesso: false, mensagem: "Erro ao listar amigos." };
+            return { sucesso: false, mensagem: data || "Erro ao listar amigos." };
         }
     } catch (error) {
         console.error(error);
@@ -79,11 +80,12 @@ export async function listarAmizadeLog(idUsuario) {
     try {
         const response = await fetch(`${BASE_URL}?idUsuario=${idUsuario}`);
 
+        const data = await response.json();
+
         if (response.ok) {
-            const logs = await response.json();
-            return { sucesso: true, logs: logs };
+            return { sucesso: true, logs: data };
         } else {
-            return { sucesso: false, mensagem: "Erro ao listar o log de amizades." };
+            return { sucesso: false, mensagem: data || "Erro ao listar o log de amizades." };
         }
     } catch (error) {
         console.error(error);
@@ -97,13 +99,16 @@ export async function buscarStatusAmizade(idUsuario1, idUsuario2) {
 
         if (response.ok) {
             const data = await response.json();
-            return data;
+            return data;  // Exemplo: { existeAmizade: true, status: "ACEITA", idAmizade: 5, idSolicitante: 1 }
+        } else if (response.status === 404) {
+            // Caso específico: amizade não encontrada
+            return { existeAmizade: false, status: null, idAmizade: null, idSolicitante: null };
         } else {
-            console.error("Erro ao buscar status da amizade. Status HTTP:", response.status);
-            return { existeAmizade: false, status: null };
+            console.error("Erro inesperado ao buscar status da amizade. Status HTTP:", response.status);
+            return { erro: true, mensagem: `Erro inesperado (${response.status})` };
         }
     } catch (error) {
-        console.error("Erro ao buscar status da amizade:", error);
-        return { existeAmizade: false, status: null };
+        console.error("Erro de rede ao buscar status da amizade:", error);
+        return { erro: true, mensagem: "Erro de rede ou servidor indisponível." };
     }
 }
