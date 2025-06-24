@@ -22,17 +22,17 @@ public interface AmizadeRepository extends JpaRepository<Amizade, Long> {
             @Param("u2") Usuario u2,
             @Param("status") List<StatusAmizade> status);
 
-    @Query("SELECT a FROM Amizade a WHERE (a.solicitante = :usuario OR a.solicitado = :usuario) AND a.status = :status")
+    @Query("SELECT a FROM Amizade a WHERE (a.solicitante = :usuario OR a.solicitado = :usuario) AND a.status = :status AND a.excluida = false")
     List<Amizade> findByStatusAndUsuario(@Param("status") StatusAmizade status, @Param("usuario") Usuario usuario);
 
     @Modifying
-    @Query("DELETE FROM Amizade a WHERE a.solicitante.id = :userId OR a.solicitado.id = :userId")
-    void deleteByUsuarioId(@Param("userId") Integer userId);
+    @Query("UPDATE Amizade a SET a.excluida = true WHERE a.solicitante.id = :userId OR a.solicitado.id = :userId")
+    void excluirLogicamentePorUsuarioId(@Param("userId") Integer userId);
 
-    @Query("SELECT a FROM Amizade a WHERE a.solicitante = :usuario OR a.solicitado = :usuario")
+    // Agora ignora amizades excluídas
+    @Query("SELECT a FROM Amizade a WHERE (a.solicitante = :usuario OR a.solicitado = :usuario) AND a.excluida = false")
     List<Amizade> findAllByUsuario(@Param("usuario") Usuario usuario);
 
-    @Query("SELECT a FROM Amizade a WHERE (a.solicitante = :usuario1 AND a.solicitado = :usuario2) OR (a.solicitante = :usuario2 AND a.solicitado = :usuario1)")
+    @Query("SELECT a FROM Amizade a WHERE ((a.solicitante = :usuario1 AND a.solicitado = :usuario2) OR (a.solicitante = :usuario2 AND a.solicitado = :usuario1)) AND a.excluida = false")
     Optional<Amizade> findByUsuarios(@Param("usuario1") Usuario usuario1, @Param("usuario2") Usuario usuario2);
 }
-
