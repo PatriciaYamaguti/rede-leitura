@@ -1,11 +1,10 @@
 package com.redeleitura.mapper;
 
-import com.redeleitura.dto.AcessoDTO;
+import org.springframework.stereotype.Component;
+
 import com.redeleitura.dto.LivroAtualDTO;
-import com.redeleitura.dto.UsuarioDTO;
 import com.redeleitura.dto.UsuarioLivrosDTO;
 import com.redeleitura.entity.Usuario;
-import org.springframework.stereotype.Component;
 
 @Component
 public class UsuarioLivrosMapper {

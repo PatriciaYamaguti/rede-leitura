@@ -1,12 +1,8 @@
 package com.redeleitura.dto;
 
-import com.redeleitura.entity.Amizade;
-import com.redeleitura.entity.Usuario;
-import com.redeleitura.enums.StatusAmizade;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToOne;
-
 import java.time.LocalDateTime;
+
+import com.redeleitura.enums.StatusAmizade;
 
 public class AmizadeLogDTO {
     private Integer idUsuario;
