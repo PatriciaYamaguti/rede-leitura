@@ -13,7 +13,8 @@ public interface AmizadeService {
     ResponseEntity<?> removerSolicitacao(Long idSolicitacao);
     List<UsuarioLivrosEmComumDTO> listarAmigos(Integer idUsuario);
     List<AmizadeLogDTO> listarAmizadeLog(Integer idUsuario);
-    StatusAmizadeDTO buscarStatusAmizade(Integer idUsuario1, Integer idUsuario2);
+    ResponseEntity<?> buscarStatusAmizade(Integer idUsuario1, Integer idUsuario2);
+
 }
 
  
