@@ -107,3 +107,24 @@ export async function buscarStatusAmizade(idUsuario1, idUsuario2) {
         return { existeAmizade: false, status: null };
     }
 }
+
+export async function marcarComoLido(idUsuario1, idUsuario2) {
+    try {
+        const response = await fetch(`${BASE_URL}/marcarLido?idUsuario1=${idUsuario1}&idUsuario2=${idUsuario2}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            return { sucesso: true, mensagem: "Marcado como lido com sucesso." };
+        } else if (response.status === 404) {
+            const mensagem = await response.text();
+            return { sucesso: false, mensagem: mensagem || "Amizade ou solicitação não encontrada." };
+        } else {
+            console.error("Erro inesperado ao marcar como lido. Status HTTP:", response.status);
+            return { sucesso: false, mensagem: `Erro inesperado (${response.status})` };
+        }
+    } catch (error) {
+        console.error("Erro ao marcar como lido:", error);
+        return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
+    }
+}

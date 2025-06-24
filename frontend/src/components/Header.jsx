@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { FiUser, FiBook, FiLogOut, FiEdit2, FiUsers, FiUserPlus, FiInbox } from "react-icons/fi";
-import { listarAmizadeLog } from "../services/api/amizade";
+import { listarAmizadeLog, marcarComoLido } from "../services/api/amizade";
 
 const Header = () => {
     const [menuAberto, setMenuAberto] = useState(false);
@@ -83,7 +83,7 @@ const Header = () => {
 
                         {caixaAberta && (
                             <div
-                                className="absolute right-0 mt-2 w-72 max-h-80 overflow-y-auto bg-white rounded-lg shadow-xl z-50 border border-gray-100 animate-slide-fade" 
+                                className="absolute right-0 mt-2 w-72 max-h-80 overflow-y-auto bg-white rounded-lg shadow-xl z-50 border border-gray-100 animate-slide-fade"
                             >
                                 <div className="px-4 py-3 border-b border-gray-100">
                                     <p className="text-sm font-medium text-gray-900">Caixa de Entrada</p>
@@ -91,17 +91,40 @@ const Header = () => {
 
                                 {logsAmizade.length > 0 ? (
                                     logsAmizade.map((log, index) => (
-                                        <Link
+                                        <div
                                             key={index}
-                                            to={`/usuario/${log.idUsuario}`}
-                                            onClick={() => setCaixaAberta(false)}
-                                            className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition border-b border-gray-100"
+                                            className="block px-4 py-3 text-sm text-gray-700 border-b border-gray-100 hover:bg-gray-50 transition"
                                         >
-                                            <div className="font-medium text-gray-900">{log.nomeUsuario}</div>
-                                            <div className="text-gray-600 text-sm">
-                                                {log.descricao} — {new Date(log.dataHora).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                            <Link
+                                                to={`/usuario/${log.idUsuario}`}
+                                                onClick={() => setCaixaAberta(false)}
+                                                className="font-medium text-gray-900 block"
+                                            >
+                                                {log.nomeUsuario}
+                                            </Link>
+
+                                            <div className="text-gray-600 text-sm mb-1">
+                                                {log.descricao} — {new Date(log.dataHora).toLocaleDateString('pt-BR', {
+                                                    day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                                                })}
                                             </div>
-                                        </Link>
+
+                                            <button
+                                                onClick={async () => {
+                                                    await marcarComoLido(idLogado, log.idUsuario);
+
+                                                    const resultadoAtualizado = await listarAmizadeLog(idLogado);
+                                                    if (resultadoAtualizado.sucesso) {
+                                                        setLogsAmizade(resultadoAtualizado.logs);
+                                                        const pendentes = resultadoAtualizado.logs.filter(l => l.status === "PENDENTE").length;
+                                                        setQuantidadeNotificacoes(pendentes);
+                                                    }
+                                                }}
+                                                className="text-gray-600 text-xs underline hover:text-gray-800 cursor-pointer"
+                                            >
+                                                Marcar como lido
+                                            </button>
+                                        </div>
                                     ))
                                 ) : (
                                     <div className="px-4 py-3 text-sm text-gray-500">Nenhuma notificação de amizade.</div>

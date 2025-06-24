@@ -19,8 +19,8 @@ const PerfilUsuario = ({ usuario }) => {
                     if (resultado.existeAmizade) {
                         setIsAmigo(true);
                         setStatusAmizade(resultado.status);
-                    
-                        if(resultado.idSolicitante == idLogado) {
+
+                        if (resultado.idSolicitante == idLogado) {
                             setSolicitante(true);
                         }
                     } else {
@@ -123,7 +123,7 @@ const PerfilUsuario = ({ usuario }) => {
                             isSolicitante ? (
                                 <button
                                     onClick={handleDesfazerAmizade}
-                                    className="px-4 py-2 text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all"
+                                    className="px-4 py-2 text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all cursor-pointer"
                                 >
                                     Cancelar solicitação
                                 </button>
@@ -131,37 +131,37 @@ const PerfilUsuario = ({ usuario }) => {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={handleDesfazerAmizade}
-                                        className="px-4 py-2 text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all"
+                                        className="px-4 py-2 text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all cursor-pointer"
                                     >
                                         Recusar solicitação
                                     </button>
-                                        <button
+                                    <button
                                         onClick={handleAceitarAmizade}
-                                        className="px-4 py-2 text-sm font-medium rounded-lg bg-white text-[#8a6d5b] hover:bg-white/90 transition-all flex items-center space-x-1"
+                                        className="px-4 py-2 text-sm font-medium rounded-lg bg-white text-[#8a6d5b] hover:bg-white/90 transition-all flex items-center space-x-1 cursor-pointer"
                                     >
                                         Aceitar solicitação
                                     </button>
                                 </div>
                             )
-                            
+
                         ) : isAmigo && statusAmizade === "ACEITA" ? (
-                        <button
-                            onClick={handleDesfazerAmizade}
-                            className="px-4 py-2 text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all"
-                        >
-                            Remover amigo
-                        </button>
+                            <button
+                                onClick={handleDesfazerAmizade}
+                                className="px-4 py-2 text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all cursor-pointer"
+                            >
+                                Remover amigo
+                            </button>
                         ) : (
-                        <button
-                            onClick={handleAdicionarAmigo}
-                            className="px-4 py-2 text-sm font-medium rounded-lg bg-white text-[#8a6d5b] hover:bg-white/90 transition-all flex items-center space-x-1"
-                        >
-                            <span>+</span>
-                            <span>Adicionar amigo</span>
-                        </button>
+                            <button
+                                onClick={handleAdicionarAmigo}
+                                className="px-4 py-2 text-sm font-medium rounded-lg bg-white text-[#8a6d5b] hover:bg-white/90 transition-all flex items-center space-x-1 cursor-pointer"
+                            >
+                                <span>+</span>
+                                <span>Adicionar amigo</span>
+                            </button>
                         )}
                     </div>
-                    
+
                 )}
             </div>
 
