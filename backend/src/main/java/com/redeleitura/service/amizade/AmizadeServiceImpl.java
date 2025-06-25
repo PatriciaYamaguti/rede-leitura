@@ -1,27 +1,32 @@
 package com.redeleitura.service.amizade;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import com.redeleitura.dto.AmizadeLogDTO;
-import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
-import com.redeleitura.entity.AmizadeLog;
-import com.redeleitura.mapper.AmizadeLogMapper;
-import com.redeleitura.mapper.UsuarioLivrosEmComumMapper;
-import com.redeleitura.repository.AmizadeLogRepository;
-import com.redeleitura.repository.LivrosLidosRepository;
-import com.redeleitura.service.livro.LivrosEmComumService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.redeleitura.dto.AmizadeLogDTO;
+import com.redeleitura.dto.StatusAmizadeDTO;
+import com.redeleitura.dto.UsuarioLivrosEmComumDTO;
 import com.redeleitura.entity.Amizade;
+import com.redeleitura.entity.AmizadeLog;
 import com.redeleitura.entity.Usuario;
 import com.redeleitura.enums.StatusAmizade;
+import com.redeleitura.mapper.AmizadeLogMapper;
+import com.redeleitura.mapper.UsuarioLivrosEmComumMapper;
+import com.redeleitura.repository.AmizadeLogRepository;
 import com.redeleitura.repository.AmizadeRepository;
 import com.redeleitura.repository.UsuarioRepository;
+import com.redeleitura.service.livro.LivrosEmComumService;
+
+import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
@@ -47,10 +52,10 @@ public class AmizadeServiceImpl implements AmizadeService {
 
     @Override
     public ResponseEntity<?> enviarSolicitacao(Integer idSolicitante, Integer idSolicitado) {
-        Usuario solicitante = usuarioRepository.findById(idSolicitante)
+        Usuario solicitante = usuarioRepository.findByIdAndDataExpiracaoIsNull(idSolicitante)
             .orElseThrow(() -> new RuntimeException("Solicitante não encontrado"));
 
-        Usuario solicitado = usuarioRepository.findById(idSolicitado)
+        Usuario solicitado = usuarioRepository.findByIdAndDataExpiracaoIsNull(idSolicitado)
             .orElseThrow(() -> new RuntimeException("Solicitado não encontrado"));
 
         Optional<Amizade> existente = amizadeRepository.findRelacionamentoEntreUsuarios(
@@ -124,7 +129,7 @@ public class AmizadeServiceImpl implements AmizadeService {
 
     @Override
     public List<UsuarioLivrosEmComumDTO> listarAmigos(Integer idUsuario) {
-        Usuario usuario = usuarioRepository.findById(idUsuario)
+        Usuario usuario = usuarioRepository.findByIdAndDataExpiracaoIsNull(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         List<Amizade> amizades = amizadeRepository.findByStatusAndUsuario(StatusAmizade.ACEITA, usuario);
@@ -139,8 +144,31 @@ public class AmizadeServiceImpl implements AmizadeService {
     }
 
     @Override
+    public ResponseEntity<?> buscarStatusAmizade(Integer idUsuario1, Integer idUsuario2) {
+        Usuario usuario1 = usuarioRepository.findByIdAndDataExpiracaoIsNull(idUsuario1)
+                .orElseThrow(() -> new RuntimeException("Usuário 1 não encontrado"));
+
+        Usuario usuario2 = usuarioRepository.findByIdAndDataExpiracaoIsNull(idUsuario2)
+                .orElseThrow(() -> new RuntimeException("Usuário 2 não encontrado"));
+
+        Optional<Amizade> amizadeOptional = amizadeRepository.findByUsuarios(usuario1, usuario2);
+
+        if (amizadeOptional.isPresent()) {
+            Amizade amizade = amizadeOptional.get();
+            String status = amizade.getStatus().name();
+            Integer idSolicitante = amizade.getSolicitante().getId();
+
+            StatusAmizadeDTO statusDTO = new StatusAmizadeDTO(true, status, amizade.getId(), idSolicitante);
+            return ResponseEntity.ok(statusDTO);
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Não há amizade nem solicitação pendente entre os usuários.");
+    }
+
+    @Override
     public List<AmizadeLogDTO> listarAmizadeLog(Integer idUsuario) {
-        Usuario usuario = usuarioRepository.findById(idUsuario)
+        Usuario usuario = usuarioRepository.findByIdAndDataExpiracaoIsNull(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         // Buscar todas as amizades onde o usuário está envolvido
@@ -163,6 +191,25 @@ public class AmizadeServiceImpl implements AmizadeService {
         }
 
         return resultado;
+    }
+
+    public ResponseEntity<?> marcarComoLido(Integer idUsuario1, Integer idUsuario2) {
+        Usuario usuario1 = usuarioRepository.findById(idUsuario1)
+                .orElseThrow(() -> new RuntimeException("Usuário 1 não encontrado"));
+
+        Usuario usuario2 = usuarioRepository.findById(idUsuario2)
+                .orElseThrow(() -> new RuntimeException("Usuário 2 não encontrado"));
+
+        Optional<Amizade> amizadeOptional = amizadeRepository.findByUsuarios(usuario1, usuario2);
+
+        if (amizadeOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não há amizade nem solicitação pendente entre os usuários.");
+        }
+
+        Amizade amizade = amizadeOptional.get();
+        limparLogAmizade(amizade);
+
+        return ResponseEntity.ok().build();
     }
 
     @Transactional

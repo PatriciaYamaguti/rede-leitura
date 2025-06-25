@@ -1,11 +1,9 @@
 package com.redeleitura.dto;
 
-import com.redeleitura.entity.Usuario;
+import java.time.LocalDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 public class LivrosLidosDTO {
     @Setter

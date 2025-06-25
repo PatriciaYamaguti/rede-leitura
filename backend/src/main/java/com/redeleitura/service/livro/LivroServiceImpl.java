@@ -102,7 +102,7 @@ public class LivroServiceImpl implements LivroService {
     }
 
     private Usuario verificarUsuarioBanco(Integer idUsuario) {
-        return usuarioRepository.findById(idUsuario)
+        return usuarioRepository.findByIdAndDataExpiracaoIsNull(idUsuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário não encontrado"));
     }
 

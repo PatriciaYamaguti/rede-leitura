@@ -4,40 +4,72 @@ import Cadastro from "./pages/Cadastro";
 import Login from "./pages/Login";
 import Livros from "./pages/Livros";
 import { AlertProvider } from "./providers/AlertProvider";
-import PrivateRoute from "./components/PrivateRoute";
+import ValidacaoRoute from "./components/ValidacaoRoute";
+import Perfil from "./pages/Perfl";
+import Descobrir from "./pages/Descobrir";
+import UsuarioDetalhes from "./pages/UsuarioDetalhes";
+import Amigos from "./pages/Amigos";
+import Logout from "./pages/Logout";
+import Home from "./pages/Home";
 
 function App() {
   return (
     <AlertProvider>
       <Routes>
-        <Route path="/" element={<></>} />
         <Route path="/cadastrar" element={<Cadastro />} />
         <Route path="/logar" element={<Login />} />
 
         <Route
+          path="/"
+          element={
+            <ValidacaoRoute>
+              <Home />
+            </ValidacaoRoute>
+          }
+        />
+
+        <Route
           path="/livros"
           element={
-            <PrivateRoute>
+            <ValidacaoRoute>
               <Livros />
-            </PrivateRoute>
+            </ValidacaoRoute>
           }
         />
         <Route
+          path="/perfil"
+          element={
+            <ValidacaoRoute>
+              <Perfil />
+            </ValidacaoRoute>
+          }
+        />
+
+        <Route
           path="/descobrir"
           element={
-            <PrivateRoute>
-              
-            </PrivateRoute>
+            <ValidacaoRoute>
+              <Descobrir />
+            </ValidacaoRoute>
           }
         />
         <Route
           path="/amigos"
           element={
-            <PrivateRoute>
-              
-            </PrivateRoute>
+            <ValidacaoRoute>
+              <Amigos />
+            </ValidacaoRoute>
           }
         />
+        <Route
+          path="/usuario/:id"
+          element={
+            <ValidacaoRoute>
+              <UsuarioDetalhes />
+            </ValidacaoRoute>
+          }
+        />
+        <Route path="/logout" element={<Logout />} />
       </Routes>
     </AlertProvider>
   );

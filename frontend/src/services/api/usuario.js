@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8080/api/usuarios';
+const BASE_URL = 'http://localhost:8000/api/usuarios';
 
 export async function cadastrarUsuario(dadosUsuario) {
     if (dadosUsuario.nome.length > 80) {
@@ -8,12 +8,12 @@ export async function cadastrarUsuario(dadosUsuario) {
         return { sucesso: false, mensagem: "Nome de usuário com mais de 20 caracteres!" };
     }
 
-    if(dadosUsuario.descricao.length < 10) {
-        return { sucesso: false, mensagem: "Sua descrição deve ter no mínimo 10 caracteres."}
+    if (dadosUsuario.descricao.length < 10) {
+        return { sucesso: false, mensagem: "A descrição tem que ter mais de 10 caracteres!" };
     }
 
-    if (dadosUsuario.senha.length < 3) {
-        return { sucesso: false, mensagem: "Senha menor que 3 caracteres!"}
+    if (dadosUsuario.acesso.senha.length < 3) {
+        return { sucesso: false, mensagem: "Senha precisa ter mais que 3 caracteres!" };
     }
 
     try {
@@ -26,7 +26,7 @@ export async function cadastrarUsuario(dadosUsuario) {
         if (response.ok) {
             return { sucesso: true, mensagem: "Cadastro realizado com sucesso!" };
         } else if (response.status === 409) {
-            return { sucesso: false, mensagem: "Nome de usuário já cadastrado!" };
+            return { sucesso: false, mensagem: "Usuário já cadastrado!" };
         } else if (response.status === 400) {
             return { sucesso: false, mensagem: "Dados inválidos! Verifique as informações enviadas." };
         } else {
@@ -71,12 +71,8 @@ export async function atualizarUsuario(id, dadosAtualizados) {
         return { sucesso: false, mensagem: "Nome de usuário com mais de 20 caracteres!" };
     }
 
-    if(!dadosAtualizados.descricao.length > 10) {
-        return { sucesso: false, mensagem: "Sua descrição deve ter no mínimo 10 caracteres."}
-    }
-
-    if (!dadosAtualizados.senha.length > 3) {
-        return { sucesso: false, mensagem: "Senha menor que 3 caracteres!"}
+    if (dadosAtualizados.descricao.length < 10) {
+        return { sucesso: false, mensagem: "A descrição tem que ter mais de 10 caracteres!" };
     }
 
     try {
@@ -133,5 +129,21 @@ export async function listarUsuariosPorInteresses(idUsuario) {
     } catch (error) {
         console.error(error);
         return { sucesso: false, mensagem: "Falha de conexão com o servidor!" };
+    }
+}
+
+export async function buscarUsuarioPorId(idUsuario) {
+    try {
+        const response = await fetch(`${BASE_URL}?idUsuario=${idUsuario}`)
+
+        if (response.ok) {
+            const usuario = await response.json();
+            return { sucesso: true, usuario: usuario }
+        } else {
+            return { sucesso: false, mensagem: "Erro ao buscar informações do usuário." }
+        }
+    } catch (error) {
+        console.error(error);
+        return { sucesso: false, mensagem: "Falha de conexão com o servidor!" }
     }
 }

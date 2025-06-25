@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8080/api/livros';
+const BASE_URL = 'http://localhost:8000/api/livros';
 
 export async function buscarLivrosPorTitulo(titulo) {
     try {
@@ -8,7 +8,7 @@ export async function buscarLivrosPorTitulo(titulo) {
             const livros = await response.json();
             return { sucesso: true, livros: livros };
         } else {
-            return { sucesso: false, mensagem: "Erro ao buscar livros pelo título." };
+            return { sucesso: false, mensagem: "Erro ao buscar livro, verifique a ortografia da pesquisa." };
         }
     } catch (error) {
         console.error(error);

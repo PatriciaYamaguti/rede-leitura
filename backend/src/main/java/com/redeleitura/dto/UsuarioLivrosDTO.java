@@ -1,25 +1,27 @@
 package com.redeleitura.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-public class UsuarioDTO {
+public class UsuarioLivrosDTO {
 
     private Integer id;
     private String nome;
     private String usuario;
     private String descricao;
-    private AcessoDTO acesso;
     private LivroAtualDTO livroAtual;
     private LocalDateTime dataCadastro;
-    public UsuarioDTO() {}
+    private List<LivrosLidosDTO> livrosLidos;
 
-    public UsuarioDTO(String nome, String usuario, String descricao, AcessoDTO acesso, LocalDateTime dataCadastro, Integer id) {
+    public UsuarioLivrosDTO() {}
+
+    public UsuarioLivrosDTO(String nome, String usuario, String descricao, LocalDateTime dataCadastro, Integer id, List<LivrosLidosDTO> livrosLidos) {
         this.nome = nome;
         this.usuario = usuario;
-        this.acesso = acesso;
         this.dataCadastro = dataCadastro;
         this.descricao = descricao;
         this.id = id;
+        this.livrosLidos = livrosLidos;
     }
 
     public String getNome() {
@@ -38,14 +40,6 @@ public class UsuarioDTO {
 
     public void setUsuario(String usuario) {
         this.usuario = usuario;
-    }
-
-    public AcessoDTO getAcesso() {
-        return acesso;
-    }
-
-    public void setAcesso(AcessoDTO acesso) {
-        this.acesso = acesso;
     }
 
     public void setLivroAtual(LivroAtualDTO livroAtual) {
@@ -67,4 +61,8 @@ public class UsuarioDTO {
     public Integer getId() { return id; }
 
     public void setId(Integer id) { this.id = id; }
+
+    public List<LivrosLidosDTO> getLivrosLidos() { return livrosLidos; }
+
+    public void setLivrosLidos(List<LivrosLidosDTO> livrosLidos) { this.livrosLidos = livrosLidos; }
 }

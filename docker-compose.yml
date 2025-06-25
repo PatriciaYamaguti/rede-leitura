@@ -1,0 +1,52 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: rede-leitura
+    restart: always
+    environment:
+      - MYSQL_DATABASE=rede_leitura
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=redeleitura
+      - MYSQL_PASSWORD=redeleitura
+    ports:
+      - '4306:3306'
+    volumes:
+      - rede_leitura_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-p150360" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rede-leitura-network
+
+  backend:
+    build: ./backend/
+    container_name: backend
+    ports:
+      - '8000:8080'
+    networks:
+      - rede-leitura-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/rede_leitura
+      SPRING_DATASOURCE_USERNAME: redeleitura
+      SPRING_DATASOURCE_PASSWORD: redeleitura
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      mysql:
+        condition: service_healthy
+  frontend:
+    build: ./frontend/
+    container_name: frontend
+    ports:
+      - '5173:80'
+    networks:
+      - rede-leitura-network
+volumes:
+  rede_leitura_data:
+
+
+networks:
+  rede-leitura-network:
+    driver: bridge
